@@ -1,8 +1,65 @@
+import { existsSync } from "node:fs";
+import { homedir } from "node:os";
+import { dirname, isAbsolute, join, resolve } from "node:path";
+
 export const DEFAULT_API_BASE_URL = "http://127.0.0.1:8000/api";
 export const DEFAULT_CONFIDENCE_THRESHOLD = 0.9;
 
 const LOOPBACK_HOSTS = new Set(["127.0.0.1", "localhost", "[::1]", "::1"]);
 const HTTP_PROTOCOLS = new Set(["http:", "https:"]);
+
+function pythonBackend(directory, exists) {
+  return exists(join(directory, "main.py"))
+    ? { kind: "python", backendDir: directory }
+    : null;
+}
+
+function packagedBackend(root, exists, platform) {
+  const filename = platform === "win32" ? "suhuang-backend.exe" : "suhuang-backend";
+  const executable = join(root, "bin", filename);
+  return exists(executable)
+    ? { kind: "binary", backendDir: root, executable }
+    : null;
+}
+
+/**
+ * Locate a runnable Suhuang backend without assuming that this DSH package is
+ * still inside the source monorepo. Explicit configuration wins, followed by
+ * the source checkout and the ordinary per-user Runtime installation.
+ */
+export function resolveBackendLaunch(value, options = {}) {
+  const pluginDir = options.pluginDir ?? process.cwd();
+  const userHome = options.homeDir ?? homedir();
+  const exists = options.exists ?? existsSync;
+  const platform = options.platform ?? process.platform;
+  const env = options.env ?? process.env;
+  const configured = String(value ?? "").trim();
+
+  if (configured) {
+    const target = isAbsolute(configured) ? configured : resolve(pluginDir, configured);
+    return pythonBackend(target, exists)
+      ?? pythonBackend(join(target, "core", "python"), exists)
+      ?? packagedBackend(target, exists, platform);
+  }
+
+  const repoRoot = resolve(pluginDir, "..", "..");
+  const sourceBackend = pythonBackend(join(repoRoot, "core", "python"), exists);
+  if (sourceBackend) return sourceBackend;
+
+  if (platform === "win32" && env.LOCALAPPDATA) {
+    const windowsBackend = packagedBackend(join(env.LOCALAPPDATA, "Suhuang Scroll"), exists, platform);
+    if (windowsBackend) return windowsBackend;
+  }
+
+  const installRoot = join(userHome, ".local", "suhuang-scroll");
+  return packagedBackend(installRoot, exists, platform)
+    ?? pythonBackend(join(installRoot, "core", "python"), exists);
+}
+
+export function backendLaunchLabel(launch) {
+  if (!launch) return "";
+  return launch.kind === "binary" ? launch.executable : launch.backendDir;
+}
 
 export function resolveApiBaseUrl(value) {
   const candidate = String(value ?? DEFAULT_API_BASE_URL).trim() || DEFAULT_API_BASE_URL;

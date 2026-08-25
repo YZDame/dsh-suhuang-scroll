@@ -1,6 +1,6 @@
 import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
-import { dirname, isAbsolute, join, resolve } from "node:path";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { settingsNamespace } from "@deepseek-ai/dsh-settings";
@@ -9,6 +9,7 @@ import z from "@deepseek-ai/schemastery";
 import {
   DEFAULT_API_BASE_URL,
   DEFAULT_CONFIDENCE_THRESHOLD,
+  backendLaunchLabel,
   createStartPayload,
   errorMessage,
   formatStatusText,
@@ -16,6 +17,7 @@ import {
   readRuntimeSpecs,
   readRuntimeStatus,
   requestJson,
+  resolveBackendLaunch,
   resolveApiBaseUrl,
   resolveApiPort,
 } from "./runtime.js";
@@ -44,9 +46,8 @@ const SETTINGS_FIELDS = new Set([
   "confidenceThreshold",
 ]);
 
-// Directory of this plugin source (index.js), used to locate the Suhuang
-// Scroll repo checkout in local development. When installed as a published
-// package outside the repo, leave backendDir configured explicitly instead.
+// Directory of this plugin source (index.js), used to locate both source
+// checkouts and explicitly configured relative backend paths.
 const PLUGIN_DIR = dirname(fileURLToPath(import.meta.url));
 
 // Base CORS allow-list applied to a backend we spawn ourselves. This must stay
@@ -71,18 +72,6 @@ const BASE_ALLOWED_ORIGINS = [
 
 let backendChild = null;
 let backendLastError = null;
-
-function pluginBackendDir() {
-  const repoRoot = resolve(PLUGIN_DIR, "..", "..");
-  const candidate = join(repoRoot, "core", "python");
-  return existsSync(join(candidate, "main.py")) ? candidate : "";
-}
-
-function resolveBackendDir(value) {
-  const configured = String(value ?? "").trim();
-  if (configured) return isAbsolute(configured) ? configured : resolve(PLUGIN_DIR, configured);
-  return pluginBackendDir();
-}
 
 function resolvePythonInterpreter(backendDir) {
   const venv = join(backendDir, ".venv", "bin", "python");
@@ -137,11 +126,10 @@ async function startRuntimeProcess(currentSettings, origin) {
   if (existing) {
     return { started: false, alreadyExternal: true, ...existing };
   }
-  const backendDir = resolveBackendDir(currentSettings.backendDir);
-  if (!backendDir || !existsSync(join(backendDir, "main.py"))) {
-    throw new Error("未找到苏黄共阅后端目录（core/python/main.py）。请在设置中配置“后端目录”。");
+  const launch = resolveBackendLaunch(currentSettings.backendDir, { pluginDir: PLUGIN_DIR });
+  if (!launch) {
+    throw new Error("未找到苏黄共阅 Runtime。请先安装 Runtime，或在设置中配置“后端所在文件夹”。");
   }
-  const python = resolvePythonInterpreter(backendDir);
   const port = resolveApiPort(currentSettings.apiBaseUrl);
   const env = {
     ...process.env,
@@ -149,8 +137,10 @@ async function startRuntimeProcess(currentSettings, origin) {
     SUHUANG_API_HOST: "127.0.0.1",
     ALLOWED_ORIGINS: buildAllowedOrigins(origin),
   };
-  const child = spawn(python, ["backend_launcher.py"], {
-    cwd: backendDir,
+  const command = launch.kind === "binary" ? launch.executable : resolvePythonInterpreter(launch.backendDir);
+  const args = launch.kind === "binary" ? [] : ["backend_launcher.py"];
+  const child = spawn(command, args, {
+    cwd: launch.kind === "binary" ? dirname(launch.executable) : launch.backendDir,
     env,
     stdio: ["ignore", "pipe", "pipe"],
   });
@@ -167,7 +157,7 @@ async function startRuntimeProcess(currentSettings, origin) {
   backendChild = child;
   const probe = await waitForHealth(apiBaseUrl);
   if (!probe) {
-    backendLastError = "后端进程已启动，但健康检查超时。请检查 Python 环境与端口占用。";
+    backendLastError = "后端进程已启动，但健康检查超时。请检查 Runtime 安装与端口占用。";
     return { started: true, health: null };
   }
   return { started: true, ...probe };
@@ -199,15 +189,17 @@ async function runtimeBridgeState(getCurrentSettings, request) {
   const apiBaseUrl = resolveApiBaseUrl(current.apiBaseUrl);
   const origin = String(request.headers?.origin ?? "").trim() || undefined;
   const probe = await probeHealth(apiBaseUrl);
-  const backendDir = resolveBackendDir(current.backendDir);
+  const launch = resolveBackendLaunch(current.backendDir, { pluginDir: PLUGIN_DIR });
   return {
     ok: true,
     apiBaseUrl,
     port: resolveApiPort(current.apiBaseUrl),
     process: {
       ...runtimeProcessStatus(),
-      backendDir: backendDir || undefined,
-      python: backendDir ? resolvePythonInterpreter(backendDir) : undefined,
+      backendDir: launch?.backendDir,
+      executable: launch ? backendLaunchLabel(launch) : undefined,
+      mode: launch?.kind,
+      python: launch?.kind === "python" ? resolvePythonInterpreter(launch.backendDir) : undefined,
     },
     health: probe?.health ?? null,
     automation: probe?.automation ?? null,
