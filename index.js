@@ -132,6 +132,11 @@ function runtimeProcessStatus() {
 async function startRuntimeProcess(currentSettings, origin) {
   backendLastError = null;
   if (isChildAlive()) return { started: true, alreadyManaged: true };
+  const apiBaseUrl = resolveApiBaseUrl(currentSettings.apiBaseUrl);
+  const existing = await probeHealth(apiBaseUrl);
+  if (existing) {
+    return { started: false, alreadyExternal: true, ...existing };
+  }
   const backendDir = resolveBackendDir(currentSettings.backendDir);
   if (!backendDir || !existsSync(join(backendDir, "main.py"))) {
     throw new Error("未找到苏黄共阅后端目录（core/python/main.py）。请在设置中配置“后端目录”。");
@@ -160,7 +165,6 @@ async function startRuntimeProcess(currentSettings, origin) {
     backendChild = null;
   });
   backendChild = child;
-  const apiBaseUrl = resolveApiBaseUrl(currentSettings.apiBaseUrl);
   const probe = await waitForHealth(apiBaseUrl);
   if (!probe) {
     backendLastError = "后端进程已启动，但健康检查超时。请检查 Python 环境与端口占用。";

@@ -41,6 +41,8 @@ window.__ModuleLoader__.load({
       modelConnectionIdle: "尚未测试模型连接。",
       modelConnectionSuccess: "模型服务连接正常。",
       modelConnectionFailure: "模型服务连接失败：{error}",
+      modelConnectionLegacy: "已通过当前后端的兼容接口完成连接测试。建议稍后重启后端以启用完整设置功能。",
+      modelSaveNeedsRestart: "当前运行的是旧版后端，暂时不能保存新的模型配置。请重启本地服务后再保存。",
       modelApiKeyRequired: "请填写 API Key，或先保存一个有效密钥。",
       modelAuthFailed: "API Key 无效或当前账号无权访问该服务（HTTP {status}）。",
       modelTimeout: "连接超时，请检查 Base URL 和网络。",
@@ -135,6 +137,11 @@ window.__ModuleLoader__.load({
       pending: "待人工确认",
       runError: "运行错误",
       runtimeUnavailable: "后端不可用：{error}",
+      operationFailed: "操作未完成：{error}",
+      resumeNeedsRestart: "当前后端仍是改动前启动的旧进程，无法取消待处理的暂停。请关闭旧后端，然后点击“检查并启动新版后端”。阅卷记录会保留。",
+      checkAndStartBackend: "检查并启动新版后端",
+      externalBackendStillRunning: "端口 {port} 上的旧后端仍在运行。请先在原终端关闭它，再点击此按钮启动新版后端。",
+      externalServiceHint: "当前服务由其他程序启动，插件不会强行结束它。关闭原服务后，可从这里启动并交给插件管理。",
       loading: "读取中……",
       start: "启动",
       pause: "暂停",
@@ -201,6 +208,8 @@ window.__ModuleLoader__.load({
       modelConnectionIdle: "Model connection has not been tested.",
       modelConnectionSuccess: "Model service connection succeeded.",
       modelConnectionFailure: "Model service connection failed: {error}",
+      modelConnectionLegacy: "Connection succeeded through the current backend's compatibility endpoint. Restart the backend later to enable full settings support.",
+      modelSaveNeedsRestart: "The running backend is an older process and cannot save the new model configuration. Restart the local service, then save again.",
       modelApiKeyRequired: "Enter an API key or save a valid key first.",
       modelAuthFailed: "The API key is invalid or the account cannot access this service (HTTP {status}).",
       modelTimeout: "The connection timed out. Check the Base URL and network.",
@@ -295,6 +304,11 @@ window.__ModuleLoader__.load({
       pending: "Pending confirmation",
       runError: "Run error",
       runtimeUnavailable: "Backend unavailable: {error}",
+      operationFailed: "The action did not complete: {error}",
+      resumeNeedsRestart: "The backend is still an older process and cannot cancel the pending pause. Close the old backend, then choose “Check and start updated backend”. Grading records will be preserved.",
+      checkAndStartBackend: "Check and start updated backend",
+      externalBackendStillRunning: "The old backend is still using port {port}. Close it in the original terminal, then choose this button again to start the updated backend.",
+      externalServiceHint: "The service was started by another program, so the plugin will not terminate it. Close the original service, then start it here to let the plugin manage it.",
       loading: "Loading…",
       start: "Start",
       pause: "Pause",
@@ -879,6 +893,32 @@ window.__ModuleLoader__.load({
             apiKeyConfigured: Boolean(result.api_key_configured),
           });
         } catch (cause) {
+          const persistedProvider = catalog.data?.provider;
+          const canUseLegacyTest = Boolean(
+            persistedProvider
+            && !draft.providerApiKey
+            && draft.provider === persistedProvider.provider
+            && draft.model === persistedProvider.model
+            && draft.providerBaseUrl.replace(/\/$/, "") === String(persistedProvider.base_url || "").replace(/\/$/, "")
+          );
+          if (cause?.status === 404 && canUseLegacyTest) {
+            try {
+              const apiBaseUrl = resolveApiBaseUrl(draft.apiBaseUrl);
+              const legacyResult = await requestJson(apiBaseUrl, "/provider/status?test=true", {
+                signal: globalThis.AbortSignal?.timeout?.(20000),
+              });
+              setModelConnection({
+                state: "legacy",
+                ok: legacyResult.connection_test?.ok === true,
+                message: legacyResult.connection_test?.message || "",
+                apiKeyConfigured: Boolean(legacyResult.api_key_configured),
+              });
+              return;
+            } catch (legacyCause) {
+              setModelConnection((current) => ({ ...current, state: "error", ok: false, message: formatError(legacyCause) }));
+              return;
+            }
+          }
           setModelConnection((current) => ({ ...current, state: "error", ok: false, message: formatError(cause) }));
         }
       };
@@ -914,7 +954,7 @@ window.__ModuleLoader__.load({
           void refreshResources(apiBaseUrl);
           void testConnection(apiBaseUrl);
         } catch (cause) {
-          setError(formatError(cause));
+          setError(cause?.status === 404 && modelDirty ? t("modelSaveNeedsRestart") : formatError(cause));
         } finally {
           setSaving(false);
         }
@@ -1072,9 +1112,9 @@ window.__ModuleLoader__.load({
               tone: "secondary",
             }, modelConnection.state === "loading" ? t("loading") : t("modelConnectionTest")),
           ),
-          modelConnection.state === "ready" && modelConnection.ok
-            ? React.createElement("p", { role: "status", style: { ...mutedStyle, margin: 0, color: "var(--dsw-alias-state-success-primary)" } }, t("modelConnectionSuccess"))
-            : modelConnection.state === "error" || (modelConnection.state === "ready" && !modelConnection.ok)
+          ["ready", "legacy"].includes(modelConnection.state) && modelConnection.ok
+            ? React.createElement("p", { role: "status", style: { ...mutedStyle, margin: 0, color: "var(--dsw-alias-state-success-primary)" } }, modelConnection.state === "legacy" ? t("modelConnectionLegacy") : t("modelConnectionSuccess"))
+            : modelConnection.state === "error" || (["ready", "legacy"].includes(modelConnection.state) && !modelConnection.ok)
               ? React.createElement("p", { role: "alert", style: { ...mutedStyle, margin: 0, color: "var(--dsw-alias-state-error-primary)" } }, t("modelConnectionFailure", { error: friendlyProviderError(modelConnection.message, t) }))
               : React.createElement("p", { style: { ...mutedStyle, margin: 0 } }, t("modelConnectionIdle")),
         ),
@@ -1130,6 +1170,7 @@ window.__ModuleLoader__.load({
       const [backend, setBackend] = React.useState(null);
       const [backendBusy, setBackendBusy] = React.useState(false);
       const [backendError, setBackendError] = React.useState("");
+      const [recoveryHint, setRecoveryHint] = React.useState("");
 
       const refreshStatus = React.useCallback(async () => {
         try {
@@ -1175,10 +1216,14 @@ window.__ModuleLoader__.load({
           const apiBaseUrl = resolveApiBaseUrl(settings.apiBaseUrl);
           const result = await requestJson(apiBaseUrl, `/automation/${action}`, { method: "POST" });
           setMessage(t("controlSent", { action: label }));
+          setRecoveryHint("");
           setAutomation((current) => ({ ...(current ?? {}), run: result, active: result.state !== "stopped" }));
           await refreshStatus();
         } catch (cause) {
-          setError(t("runtimeUnavailable", { error: friendlyError(cause, t) }));
+          setError(t("operationFailed", { error: friendlyError(cause, t) }));
+          if (action === "resume" && automation?.run?.pause_requested) {
+            setRecoveryHint(t("resumeNeedsRestart"));
+          }
         } finally {
           setBusy(false);
         }
@@ -1231,17 +1276,24 @@ window.__ModuleLoader__.load({
       const startBackend = async () => {
         setBackendBusy(true);
         setBackendError("");
+        setError("");
         try {
           const state = await requestRuntimeBridge({
             method: "POST",
             body: JSON.stringify({ action: "start" }),
           });
           setBackend(state);
-          if (state.health) {
+          if (state.alreadyExternal) {
+            setMessage("");
+            setRecoveryHint(t("externalBackendStillRunning", { port: state.port ?? "—" }));
+          } else if (state.health) {
+            setRecoveryHint("");
             setMessage(t("backendStarted"));
           } else if (state.alreadyManaged) {
+            setRecoveryHint("");
             setMessage(t("backendAlreadyRunning"));
           } else {
+            setRecoveryHint("");
             setMessage(t("backendStartPending"));
           }
           await refreshStatus();
@@ -1388,6 +1440,7 @@ window.__ModuleLoader__.load({
       }
 
       const visibleError = error || (!connected ? backendError : "");
+      const showBackendRecovery = Boolean(recoveryHint);
       const showMetrics = Boolean(run && state !== "idle");
       const showRunningActions = Boolean(connected && active && !isPausePending && !isPaused && !isError && !isAwaiting);
 
@@ -1434,6 +1487,17 @@ window.__ModuleLoader__.load({
             : message
               ? React.createElement("div", { role: "status", className: "suhuang-runtime__message suhuang-runtime__message--success" }, message)
               : null,
+          showBackendRecovery
+            ? React.createElement("div", { className: "suhuang-runtime__message" },
+              React.createElement("div", { style: { marginBottom: 9, color: "var(--dsw-alias-label-secondary)" } }, recoveryHint),
+              React.createElement(ActionButton, {
+                wide: true,
+                tone: "secondary",
+                onClick: () => void startBackend(),
+                disabled: backendBusy,
+              }, t("checkAndStartBackend")),
+            )
+            : null,
         ),
         React.createElement("details", { className: "suhuang-runtime__details" },
           React.createElement("summary", null, t("connectionDetails")),
@@ -1457,7 +1521,16 @@ window.__ModuleLoader__.load({
                 }, t("closeService")),
                 active ? React.createElement("div", { style: mutedStyle }, t("serviceCloseBlocked")) : null,
               )
-              : null,
+              : connected && backend
+                ? React.createElement(React.Fragment, null,
+                  React.createElement("div", { style: mutedStyle }, t("externalServiceHint")),
+                  React.createElement(ActionButton, {
+                    tone: "secondary",
+                    onClick: () => void startBackend(),
+                    disabled: backendBusy,
+                  }, t("checkAndStartBackend")),
+                )
+                : null,
           ),
         ),
       );
