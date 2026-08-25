@@ -68,6 +68,8 @@ window.__ModuleLoader__.load({
       gradingDescription: "系统正在按顺序处理下一份。",
       pausedTitle: "阅卷已暂停",
       pausedDescription: "已完成的评分会保留，可以随时继续。",
+      pausingTitle: "正在暂停阅卷",
+      pausingDescription: "系统会在当前步骤完成后暂停。",
       completedTitle: "本轮阅卷已完成",
       completedDescription: "当前列表中的试卷均已处理完成。",
       stoppedTitle: "本轮阅卷已结束",
@@ -80,6 +82,7 @@ window.__ModuleLoader__.load({
       badgeStarting: "正在启动",
       badgeGrading: "正在阅卷",
       badgePaused: "已暂停",
+      badgePausing: "正在暂停",
       badgeCompleted: "已完成",
       badgeStopped: "已结束",
       badgeError: "任务异常",
@@ -209,6 +212,8 @@ window.__ModuleLoader__.load({
       gradingDescription: "The next paper is being processed automatically.",
       pausedTitle: "Grading paused",
       pausedDescription: "Completed scores are preserved. Resume whenever you are ready.",
+      pausingTitle: "Pausing grading",
+      pausingDescription: "Grading will pause after the current step finishes.",
       completedTitle: "This grading round is complete",
       completedDescription: "All available papers have been processed.",
       stoppedTitle: "This grading round has ended",
@@ -221,6 +226,7 @@ window.__ModuleLoader__.load({
       badgeStarting: "Starting",
       badgeGrading: "Grading",
       badgePaused: "Paused",
+      badgePausing: "Pausing",
       badgeCompleted: "Complete",
       badgeStopped: "Ended",
       badgeError: "Needs attention",
@@ -1125,6 +1131,7 @@ window.__ModuleLoader__.load({
       const runningStates = new Set(["starting", "capturing", "grading", "submitting", "waiting_next_page"]);
       const isRunning = runningStates.has(state);
       const isPaused = state === "paused";
+      const isPausePending = Boolean(run?.pause_requested && !isPaused);
       const isAwaiting = state === "awaiting_confirmation";
       const isError = state === "error";
       const isCompleted = state === "stopped" && run?.pause_reason === "end_of_queue";
@@ -1149,7 +1156,12 @@ window.__ModuleLoader__.load({
         badge = t("badgeReady");
         badgeTone = "success";
       }
-      if (isRunning) {
+      if (isPausePending) {
+        title = t("pausingTitle");
+        description = t("pausingDescription");
+        badge = t("badgePausing");
+        badgeTone = "warning";
+      } else if (isRunning) {
         title = t("gradingTitle");
         description = t("gradingDescription");
         badge = t("badgeGrading");
@@ -1193,7 +1205,7 @@ window.__ModuleLoader__.load({
           onClick: () => void start(),
           disabled: busy || !hasSpec,
         }, isCompleted ? t("startNewRound") : t("startGrading"));
-      } else if (isPaused || isError) {
+      } else if (isPausePending || isPaused || isError) {
         actionContent = React.createElement(ActionButton, {
           wide: true,
           onClick: () => void control("resume", isError ? t("retryGrading") : t("resumeGrading")),
@@ -1224,7 +1236,7 @@ window.__ModuleLoader__.load({
 
       const visibleError = error || (!connected ? backendError : "");
       const showMetrics = Boolean(run && state !== "idle");
-      const showRunningActions = Boolean(connected && active && !isPaused && !isError && !isAwaiting);
+      const showRunningActions = Boolean(connected && active && !isPausePending && !isPaused && !isError && !isAwaiting);
 
       return React.createElement("div", {
         "data-testid": "suhuang-scroll-runtime-tab",
@@ -1241,7 +1253,10 @@ window.__ModuleLoader__.load({
           showMetrics
             ? React.createElement("div", { className: "suhuang-runtime__metrics" },
               React.createElement(RuntimeMetric, { label: t("completedPapers"), value: `${completedCount} ${t("papersUnit")}` }),
-              React.createElement(RuntimeMetric, { label: t("currentStage"), value: isCompleted ? t("badgeCompleted") : runStateLabel(state, t) }),
+              React.createElement(RuntimeMetric, {
+                label: t("currentStage"),
+                value: isCompleted ? t("badgeCompleted") : isPausePending ? t("badgePausing") : runStateLabel(state, t),
+              }),
               React.createElement(RuntimeMetric, { label: t("elapsed"), value: formatDuration(run?.elapsed_seconds) }),
             )
             : null,
