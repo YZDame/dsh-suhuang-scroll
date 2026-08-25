@@ -58,6 +58,57 @@ window.__ModuleLoader__.load({
       currentTask: "当前任务",
       runtimeControls: "评分控制",
       noTask: "当前没有评分任务。",
+      readyTitle: "准备开始阅卷",
+      readyDescription: "选择好评分标准后即可开始。",
+      serviceTitle: "启动苏黄共阅",
+      serviceDescription: "启动本地服务后即可开始阅卷。",
+      serviceConnectingTitle: "正在准备苏黄共阅",
+      serviceConnectingDescription: "本地服务正在启动，请稍候。",
+      gradingTitle: "正在连续阅卷",
+      gradingDescription: "系统正在按顺序处理下一份。",
+      pausedTitle: "阅卷已暂停",
+      pausedDescription: "已完成的评分会保留，可以随时继续。",
+      completedTitle: "本轮阅卷已完成",
+      completedDescription: "当前列表中的试卷均已处理完成。",
+      stoppedTitle: "本轮阅卷已结束",
+      stoppedDescription: "已完成的评分记录已经保留。",
+      errorTitle: "阅卷遇到问题",
+      errorDescription: "处理已暂停，请查看提示后重试。",
+      awaitingTitle: "等待处理",
+      awaitingDescription: "当前结果需要处理后才能继续。",
+      badgeReady: "系统已就绪",
+      badgeStarting: "正在启动",
+      badgeGrading: "正在阅卷",
+      badgePaused: "已暂停",
+      badgeCompleted: "已完成",
+      badgeStopped: "已结束",
+      badgeError: "任务异常",
+      badgeOffline: "尚未启动",
+      completedPapers: "已完成",
+      elapsed: "用时",
+      currentStage: "当前阶段",
+      papersUnit: "份",
+      selectedSpec: "评分标准",
+      selectedAdapter: "阅卷平台",
+      connectionDetails: "连接详情",
+      localService: "本地服务",
+      closeService: "关闭本地服务",
+      serviceReady: "连接正常",
+      serviceManaged: "由苏黄共阅管理",
+      serviceExternal: "由其他程序启动",
+      startProduct: "启动苏黄共阅",
+      startGrading: "开始阅卷",
+      startNewRound: "开始新一轮",
+      pauseGrading: "暂停阅卷",
+      resumeGrading: "继续阅卷",
+      retryGrading: "重新尝试",
+      endGrading: "结束本次阅卷",
+      startProductPending: "正在启动……",
+      connectionFailed: "无法连接本地服务。",
+      startContinuousConfirm: "确认开始阅卷吗？开始后将自动逐份评分并进入下一份，直到全部完成或你主动暂停。",
+      endGradingConfirm: "确认结束本轮阅卷吗？已完成的评分会保留。",
+      stopServiceConfirm: "确认关闭本地服务吗？",
+      serviceCloseBlocked: "阅卷进行中，请先结束本轮阅卷。",
       status: "状态",
       adapter: "阅卷平台",
       spec: "评分标准",
@@ -66,13 +117,10 @@ window.__ModuleLoader__.load({
       runError: "运行错误",
       runtimeUnavailable: "后端不可用：{error}",
       loading: "读取中……",
-      manualOnly: "侧边栏只启动人工确认模式；这里没有自动提交成绩的操作。",
       start: "启动",
       pause: "暂停",
       resume: "继续",
       stop: "停止",
-      startConfirm: "确认启动一次苏黄共阅评分任务吗？不会自动提交成绩。",
-      confirmControl: "确认执行“{action}”吗？这会改变本地评分任务。",
       controlSent: "已发送“{action}”。",
       noSpec: "没有可用的评分标准，请先在设置里选择。",
       state_idle: "空闲",
@@ -151,6 +199,57 @@ window.__ModuleLoader__.load({
       currentTask: "Current task",
       runtimeControls: "Grading controls",
       noTask: "There is no grading task.",
+      readyTitle: "Ready to grade",
+      readyDescription: "Choose a grading spec, then start when ready.",
+      serviceTitle: "Start Suhuang Scroll",
+      serviceDescription: "Start the local service before grading.",
+      serviceConnectingTitle: "Preparing Suhuang Scroll",
+      serviceConnectingDescription: "The local service is starting. This may take a moment.",
+      gradingTitle: "Continuous grading in progress",
+      gradingDescription: "The next paper is being processed automatically.",
+      pausedTitle: "Grading paused",
+      pausedDescription: "Completed scores are preserved. Resume whenever you are ready.",
+      completedTitle: "This grading round is complete",
+      completedDescription: "All available papers have been processed.",
+      stoppedTitle: "This grading round has ended",
+      stoppedDescription: "Completed grading records have been preserved.",
+      errorTitle: "Grading needs attention",
+      errorDescription: "Processing is paused. Review the message and try again.",
+      awaitingTitle: "Waiting for action",
+      awaitingDescription: "The current result needs attention before grading can continue.",
+      badgeReady: "Ready",
+      badgeStarting: "Starting",
+      badgeGrading: "Grading",
+      badgePaused: "Paused",
+      badgeCompleted: "Complete",
+      badgeStopped: "Ended",
+      badgeError: "Needs attention",
+      badgeOffline: "Not started",
+      completedPapers: "Completed",
+      elapsed: "Elapsed",
+      currentStage: "Stage",
+      papersUnit: "papers",
+      selectedSpec: "Grading spec",
+      selectedAdapter: "Platform",
+      connectionDetails: "Connection details",
+      localService: "Local service",
+      closeService: "Close local service",
+      serviceReady: "Connected",
+      serviceManaged: "Managed by Suhuang Scroll",
+      serviceExternal: "Started by another application",
+      startProduct: "Start Suhuang Scroll",
+      startGrading: "Start grading",
+      startNewRound: "Start a new round",
+      pauseGrading: "Pause grading",
+      resumeGrading: "Resume grading",
+      retryGrading: "Try again",
+      endGrading: "End this grading round",
+      startProductPending: "Starting…",
+      connectionFailed: "Could not connect to the local service.",
+      startContinuousConfirm: "Start grading? Papers will be scored one by one until all are complete or you pause the run.",
+      endGradingConfirm: "End this grading round? Completed scores will be preserved.",
+      stopServiceConfirm: "Close the local service?",
+      serviceCloseBlocked: "End the current grading round before closing the service.",
       status: "Status",
       adapter: "Grading platform",
       spec: "Grading spec",
@@ -159,13 +258,10 @@ window.__ModuleLoader__.load({
       runError: "Run error",
       runtimeUnavailable: "Backend unavailable: {error}",
       loading: "Loading…",
-      manualOnly: "The sidebar starts manual-confirmation runs only; it has no score submission or auto-submit action.",
       start: "Start",
       pause: "Pause",
       resume: "Resume",
       stop: "Stop",
-      startConfirm: "Start a Suhuang Scroll grading run? Scores will not be submitted automatically.",
-      confirmControl: "Confirm “{action}”? This changes the local grading task.",
       controlSent: "“{action}” was sent.",
       noSpec: "No grading spec is available. Select one in settings first.",
       state_idle: "Idle",
@@ -415,6 +511,20 @@ window.__ModuleLoader__.load({
       return errorMessage(error);
     }
 
+    function friendlyError(error, t) {
+      const message = formatError(error);
+      return /failed to fetch|fetch failed|networkerror/i.test(message) ? t("connectionFailed") : message;
+    }
+
+    function formatDuration(value) {
+      const totalSeconds = Math.max(0, Number(value) || 0);
+      if (totalSeconds < 60) return `${Math.floor(totalSeconds)}s`;
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      if (!hours) return `${minutes}m`;
+      return `${hours}h ${minutes}m`;
+    }
+
     const inputStyle = {
       border: "1px solid var(--dsw-alias-border-l2)",
       borderRadius: 7,
@@ -434,34 +544,114 @@ window.__ModuleLoader__.load({
     };
     const mutedStyle = { color: "var(--dsw-alias-label-tertiary)", fontSize: 13, lineHeight: 1.55 };
 
-    function ActionButton({ children, disabled, onClick, tone = "neutral" }) {
-      const background = tone === "danger"
-        ? "var(--dsw-alias-state-error-primary)"
-        : "var(--dsw-alias-state-business-primary)";
+    function ActionButton({ children, disabled, onClick, tone = "primary", wide = false }) {
+      const danger = tone === "danger";
+      const secondary = tone === "secondary";
+      const background = disabled
+        ? "var(--dsw-alias-bg-layer-3)"
+        : danger || secondary
+          ? "var(--dsw-alias-bg-layer-1)"
+          : "var(--dsw-alias-state-business-primary)";
+      const color = disabled
+        ? "var(--dsw-alias-label-tertiary)"
+        : danger
+          ? "var(--dsw-alias-state-error-primary)"
+          : secondary
+            ? "var(--dsw-alias-label-primary)"
+            : "white";
       return React.createElement("button", {
         type: "button",
         disabled,
         onClick,
         style: {
           boxSizing: "border-box",
-          height: 32,
-          border: "0",
-          borderRadius: 16,
-          color: "white",
-          background: disabled ? "var(--dsw-alias-bg-layer-3)" : background,
+          width: wide ? "100%" : "auto",
+          minWidth: wide ? 0 : 72,
+          height: wide ? 42 : 32,
+          border: danger
+            ? "1px solid var(--dsw-alias-state-error-primary)"
+            : secondary
+              ? "1px solid var(--dsw-alias-border-l2)"
+              : "1px solid transparent",
+          borderRadius: wide ? 10 : 16,
+          color,
+          background,
           cursor: disabled ? "not-allowed" : "pointer",
-          padding: "0 14px",
+          padding: wide ? "0 18px" : "0 14px",
           font: "inherit",
-          fontSize: 13,
+          fontSize: wide ? 14 : 13,
+          fontWeight: wide ? 600 : 500,
           lineHeight: "20px",
           display: "inline-flex",
           alignItems: "center",
           justifyContent: "center",
           gap: 4,
           whiteSpace: "nowrap",
-          opacity: disabled ? 0.55 : 1,
+          opacity: disabled ? 0.62 : 1,
         },
       }, children);
+    }
+
+    const runtimeTabCss = `
+      .suhuang-runtime {
+        width: 100%; box-sizing: border-box; display: flex; flex-direction: column;
+        gap: 14px; padding: 16px; color: var(--dsw-alias-label-primary);
+      }
+      .suhuang-runtime__header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+      .suhuang-runtime__title { margin: 0; font-size: 18px; font-weight: 700; letter-spacing: -0.015em; }
+      .suhuang-runtime__panel {
+        position: relative; overflow: hidden; padding: 17px; border: 1px solid var(--dsw-alias-border-l2);
+        border-radius: 14px; background: linear-gradient(145deg, var(--dsw-alias-bg-layer-2), var(--dsw-alias-bg-layer-1));
+        box-shadow: 0 10px 28px rgba(0, 0, 0, 0.055);
+      }
+      .suhuang-runtime__heading { margin: 0; font-size: 18px; line-height: 1.35; font-weight: 700; letter-spacing: -0.012em; }
+      .suhuang-runtime__description { margin: 7px 0 0; color: var(--dsw-alias-label-tertiary); font-size: 13px; line-height: 1.6; }
+      .suhuang-runtime__badge {
+        display: inline-flex; align-items: center; gap: 7px; flex: none; padding: 5px 9px;
+        border: 1px solid var(--dsw-alias-border-l2); border-radius: 999px;
+        background: var(--dsw-alias-bg-layer-2); color: var(--dsw-alias-label-secondary); font-size: 12px; font-weight: 600;
+      }
+      .suhuang-runtime__dot { width: 7px; height: 7px; border-radius: 50%; background: var(--dsw-alias-label-tertiary); }
+      .suhuang-runtime__badge[data-tone="success"] .suhuang-runtime__dot { background: var(--dsw-alias-state-success-primary); }
+      .suhuang-runtime__badge[data-tone="business"] .suhuang-runtime__dot { background: var(--dsw-alias-state-business-primary); }
+      .suhuang-runtime__badge[data-tone="warning"] .suhuang-runtime__dot { background: var(--dsw-alias-state-warn-primary); }
+      .suhuang-runtime__badge[data-tone="error"] .suhuang-runtime__dot { background: var(--dsw-alias-state-error-primary); }
+      .suhuang-runtime__metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 17px; }
+      .suhuang-runtime__metric { min-width: 0; padding: 11px; border: 1px solid var(--dsw-alias-border-l2); border-radius: 10px; background: var(--dsw-alias-bg-layer-1); }
+      .suhuang-runtime__metric-label { color: var(--dsw-alias-label-tertiary); font-size: 11px; line-height: 1.4; }
+      .suhuang-runtime__metric-value { margin-top: 4px; overflow: hidden; color: var(--dsw-alias-label-primary); font-size: 15px; font-weight: 700; line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; }
+      .suhuang-runtime__config { display: grid; grid-template-columns: minmax(0, 1fr); gap: 9px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--dsw-alias-border-l2); }
+      .suhuang-runtime__config-row { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 10px; align-items: baseline; font-size: 12px; }
+      .suhuang-runtime__config-label { color: var(--dsw-alias-label-tertiary); }
+      .suhuang-runtime__config-value { overflow: hidden; color: var(--dsw-alias-label-secondary); text-overflow: ellipsis; white-space: nowrap; }
+      .suhuang-runtime__actions { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; margin-top: 17px; }
+      .suhuang-runtime__actions--running { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+      .suhuang-runtime__message { margin-top: 12px; padding: 10px 11px; border-radius: 9px; background: var(--dsw-alias-bg-layer-1); font-size: 12px; line-height: 1.55; }
+      .suhuang-runtime__message--error { color: var(--dsw-alias-state-error-primary); }
+      .suhuang-runtime__message--success { color: var(--dsw-alias-state-success-primary); }
+      .suhuang-runtime__details { border-top: 1px solid var(--dsw-alias-border-l2); padding-top: 2px; }
+      .suhuang-runtime__details summary { padding: 11px 2px; color: var(--dsw-alias-label-tertiary); cursor: pointer; font-size: 12px; user-select: none; }
+      .suhuang-runtime__details-body { display: flex; flex-direction: column; gap: 10px; padding: 3px 2px 2px; }
+      @media (max-width: 340px) {
+        .suhuang-runtime { padding: 12px; }
+        .suhuang-runtime__panel { padding: 14px; }
+        .suhuang-runtime__metrics { grid-template-columns: 1fr; }
+        .suhuang-runtime__actions--running { grid-template-columns: 1fr; }
+      }
+    `;
+
+    function StatusBadge({ children, tone = "neutral" }) {
+      return React.createElement("span", { className: "suhuang-runtime__badge", "data-tone": tone },
+        React.createElement("span", { className: "suhuang-runtime__dot", "aria-hidden": true }),
+        children,
+      );
+    }
+
+    function RuntimeMetric({ label, value }) {
+      return React.createElement("div", { className: "suhuang-runtime__metric" },
+        React.createElement("div", { className: "suhuang-runtime__metric-label" }, label),
+        React.createElement("div", { className: "suhuang-runtime__metric-value", title: String(value) }, value),
+      );
     }
 
     function FieldLabel({ htmlFor, children, hint }) {
@@ -792,7 +982,7 @@ window.__ModuleLoader__.load({
         } catch (cause) {
           setHealth(null);
           setAutomation(null);
-          setError(formatError(cause));
+          setError(friendlyError(cause, t));
         }
       }, [settings.apiBaseUrl]);
 
@@ -817,8 +1007,8 @@ window.__ModuleLoader__.load({
         if (visible) void refreshCatalog();
       }, [visible, refreshCatalog]);
 
-      const control = async (action, label) => {
-        if (!globalThis.confirm(t("confirmControl", { action: label }))) return;
+      const control = async (action, label, confirmMessage = "") => {
+        if (confirmMessage && !globalThis.confirm(confirmMessage)) return;
         setBusy(true);
         setError("");
         setMessage("");
@@ -829,7 +1019,7 @@ window.__ModuleLoader__.load({
           setAutomation((current) => ({ ...(current ?? {}), run: result, active: result.state !== "stopped" }));
           await refreshStatus();
         } catch (cause) {
-          setError(t("runtimeUnavailable", { error: formatError(cause) }));
+          setError(t("runtimeUnavailable", { error: friendlyError(cause, t) }));
         } finally {
           setBusy(false);
         }
@@ -841,7 +1031,7 @@ window.__ModuleLoader__.load({
           setError(t("noSpec"));
           return;
         }
-        if (!globalThis.confirm(t("startConfirm"))) return;
+        if (!globalThis.confirm(t("startContinuousConfirm"))) return;
         setBusy(true);
         setError("");
         setMessage("");
@@ -852,11 +1042,11 @@ window.__ModuleLoader__.load({
             method: "POST",
             body: JSON.stringify(payload),
           });
-          setMessage(t("controlSent", { action: t("start") }));
+          setMessage(t("controlSent", { action: t("startGrading") }));
           setAutomation((current) => ({ ...(current ?? {}), run: result, active: true }));
           await refreshStatus();
         } catch (cause) {
-          setError(t("runtimeUnavailable", { error: formatError(cause) }));
+          setError(t("runtimeUnavailable", { error: friendlyError(cause, t) }));
         } finally {
           setBusy(false);
         }
@@ -868,7 +1058,7 @@ window.__ModuleLoader__.load({
           setBackend(state);
           setBackendError("");
         } catch (cause) {
-          setBackendError(t("backendBridgeUnavailable", { error: formatError(cause) }));
+          setBackendError(t("backendBridgeUnavailable", { error: friendlyError(cause, t) }));
         }
       }, []);
 
@@ -880,7 +1070,6 @@ window.__ModuleLoader__.load({
       }, [visible, refreshBackend]);
 
       const startBackend = async () => {
-        if (!globalThis.confirm(t("startBackendConfirm"))) return;
         setBackendBusy(true);
         setBackendError("");
         try {
@@ -898,14 +1087,14 @@ window.__ModuleLoader__.load({
           }
           await refreshStatus();
         } catch (cause) {
-          setBackendError(t("backendBridgeUnavailable", { error: formatError(cause) }));
+          setBackendError(t("backendBridgeUnavailable", { error: friendlyError(cause, t) }));
         } finally {
           setBackendBusy(false);
         }
       };
 
       const stopBackend = async () => {
-        if (!globalThis.confirm(t("stopBackendConfirm"))) return;
+        if (!globalThis.confirm(t("stopServiceConfirm"))) return;
         setBackendBusy(true);
         setBackendError("");
         try {
@@ -921,7 +1110,7 @@ window.__ModuleLoader__.load({
           }
           await refreshStatus();
         } catch (cause) {
-          setBackendError(t("backendBridgeUnavailable", { error: formatError(cause) }));
+          setBackendError(t("backendBridgeUnavailable", { error: friendlyError(cause, t) }));
         } finally {
           setBackendBusy(false);
         }
@@ -932,55 +1121,177 @@ window.__ModuleLoader__.load({
       const active = Boolean(automation?.active);
       const canControl = Boolean(automation?.active && run);
       const hasSpec = Boolean(effectiveDefaultSpec(settings, catalog.specs));
-      const runRows = run
-        ? [
-          [t("status"), runStateLabel(run.state, t)],
-          [t("completed"), String(run.completed_count ?? 0)],
-        ]
-        : [[t("status"), t("noTask")]];
-      if (run?.pending_decision) runRows.push([t("pending"), t("pending")]);
-      if (run?.error_message) runRows.push([t("runError"), run.error_message]);
+      const state = run?.state ?? "idle";
+      const runningStates = new Set(["starting", "capturing", "grading", "submitting", "waiting_next_page"]);
+      const isRunning = runningStates.has(state);
+      const isPaused = state === "paused";
+      const isAwaiting = state === "awaiting_confirmation";
+      const isError = state === "error";
+      const isCompleted = state === "stopped" && run?.pause_reason === "end_of_queue";
+      const serviceStarting = backendBusy || Boolean(backend?.process?.running && !connected);
+      const completedCount = Number(run?.completed_count ?? 0);
+      const specValue = run?.spec_path || effectiveDefaultSpec(settings, catalog.specs);
+      const adapterValue = run?.adapter || settings.adapter || catalog.resources?.defaultAdapter || "—";
+
+      let title = t("serviceTitle");
+      let description = t("serviceDescription");
+      let badge = t("badgeOffline");
+      let badgeTone = "neutral";
+      if (serviceStarting) {
+        title = t("serviceConnectingTitle");
+        description = t("serviceConnectingDescription");
+        badge = t("badgeStarting");
+        badgeTone = "business";
+      }
+      if (connected) {
+        title = t("readyTitle");
+        description = t("readyDescription");
+        badge = t("badgeReady");
+        badgeTone = "success";
+      }
+      if (isRunning) {
+        title = t("gradingTitle");
+        description = t("gradingDescription");
+        badge = t("badgeGrading");
+        badgeTone = "business";
+      } else if (isPaused) {
+        title = t("pausedTitle");
+        description = t("pausedDescription");
+        badge = t("badgePaused");
+        badgeTone = "warning";
+      } else if (isAwaiting) {
+        title = t("awaitingTitle");
+        description = t("awaitingDescription");
+        badge = t("pending");
+        badgeTone = "warning";
+      } else if (isError) {
+        title = t("errorTitle");
+        description = run?.error_message || t("errorDescription");
+        badge = t("badgeError");
+        badgeTone = "error";
+      } else if (isCompleted) {
+        title = t("completedTitle");
+        description = t("completedDescription");
+        badge = t("badgeCompleted");
+        badgeTone = "success";
+      } else if (state === "stopped") {
+        title = t("stoppedTitle");
+        description = t("stoppedDescription");
+        badge = t("badgeStopped");
+      }
+
+      let actionContent;
+      if (!connected) {
+        actionContent = React.createElement(ActionButton, {
+          wide: true,
+          onClick: () => void startBackend(),
+          disabled: backendBusy || Boolean(backend?.process?.running),
+        }, serviceStarting ? t("startProductPending") : t("startProduct"));
+      } else if (!active || state === "stopped") {
+        actionContent = React.createElement(ActionButton, {
+          wide: true,
+          onClick: () => void start(),
+          disabled: busy || !hasSpec,
+        }, isCompleted ? t("startNewRound") : t("startGrading"));
+      } else if (isPaused || isError) {
+        actionContent = React.createElement(ActionButton, {
+          wide: true,
+          onClick: () => void control("resume", isError ? t("retryGrading") : t("resumeGrading")),
+          disabled: busy || !canControl,
+        }, isError ? t("retryGrading") : t("resumeGrading"));
+      } else if (isAwaiting) {
+        actionContent = React.createElement(ActionButton, {
+          wide: true,
+          tone: "secondary",
+          disabled: true,
+        }, t("awaitingTitle"));
+      } else {
+        actionContent = React.createElement(React.Fragment, null,
+          React.createElement(ActionButton, {
+            wide: true,
+            tone: "secondary",
+            onClick: () => void control("pause", t("pauseGrading")),
+            disabled: busy || !canControl,
+          }, t("pauseGrading")),
+          React.createElement(ActionButton, {
+            wide: true,
+            tone: "danger",
+            onClick: () => void control("stop", t("endGrading"), t("endGradingConfirm")),
+            disabled: busy || !canControl,
+          }, t("endGrading")),
+        );
+      }
+
+      const visibleError = error || (!connected ? backendError : "");
+      const showMetrics = Boolean(run && state !== "idle");
+      const showRunningActions = Boolean(connected && active && !isPaused && !isError && !isAwaiting);
 
       return React.createElement("div", {
         "data-testid": "suhuang-scroll-runtime-tab",
-        style: { width: "100%", boxSizing: "border-box", display: "flex", flexDirection: "column", gap: 12, padding: 14, color: "var(--dsw-alias-label-primary)" },
+        className: "suhuang-runtime",
       },
-        React.createElement("div", null,
-          React.createElement("h2", { style: { margin: 0, fontSize: 17 } }, t("title")),
+        React.createElement("style", null, runtimeTabCss),
+        React.createElement("header", { className: "suhuang-runtime__header" },
+          React.createElement("h2", { className: "suhuang-runtime__title" }, t("title")),
+          React.createElement(StatusBadge, { tone: badgeTone }, badge),
         ),
-        React.createElement("section", { style: cardStyle },
-          React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, flexWrap: "wrap" } },
-            React.createElement("h3", { style: { margin: 0, fontSize: 14 } }, t("backendProcess")),
-            React.createElement("div", { style: { display: "flex", gap: 8, flexWrap: "wrap" } },
-              React.createElement(ActionButton, { onClick: () => void startBackend(), disabled: backendBusy || Boolean(backend?.process?.running) }, t("startBackend")),
-              React.createElement(ActionButton, { onClick: () => void stopBackend(), disabled: backendBusy || !backend?.process?.managed }, t("stopBackend")),
+        React.createElement("section", { className: "suhuang-runtime__panel" },
+          React.createElement("h3", { className: "suhuang-runtime__heading" }, title),
+          React.createElement("p", { className: "suhuang-runtime__description" }, description),
+          showMetrics
+            ? React.createElement("div", { className: "suhuang-runtime__metrics" },
+              React.createElement(RuntimeMetric, { label: t("completedPapers"), value: `${completedCount} ${t("papersUnit")}` }),
+              React.createElement(RuntimeMetric, { label: t("currentStage"), value: isCompleted ? t("badgeCompleted") : runStateLabel(state, t) }),
+              React.createElement(RuntimeMetric, { label: t("elapsed"), value: formatDuration(run?.elapsed_seconds) }),
+            )
+            : null,
+          React.createElement("div", { className: "suhuang-runtime__config" },
+            React.createElement("div", { className: "suhuang-runtime__config-row" },
+              React.createElement("span", { className: "suhuang-runtime__config-label" }, t("selectedSpec")),
+              React.createElement("span", { className: "suhuang-runtime__config-value", title: String(specValue || "") }, specValue ? safeBasename(specValue) : "—"),
+            ),
+            React.createElement("div", { className: "suhuang-runtime__config-row" },
+              React.createElement("span", { className: "suhuang-runtime__config-label" }, t("selectedAdapter")),
+              React.createElement("span", { className: "suhuang-runtime__config-value", title: String(adapterValue) }, adapterValue),
             ),
           ),
-          backendError
-            ? React.createElement("p", { style: { ...mutedStyle, margin: "10px 0 0", color: "var(--dsw-alias-state-error-primary)" } }, backendError)
-            : backend
-              ? React.createElement("p", { style: { ...mutedStyle, margin: "10px 0 0", color: backend.process?.running ? "var(--dsw-alias-state-success-primary)" : undefined } },
-                backend.process?.running ? (backend.process.managed ? t("backendRunning") : t("backendExternal")) : t("backendStopped"))
-              : React.createElement("p", { style: { ...mutedStyle, margin: "10px 0 0" } }, t("loading")),
-        ),
-        React.createElement("section", { style: cardStyle },
-          React.createElement("h3", { style: { margin: "0 0 10px", fontSize: 14 } }, t("currentTask")),
-          React.createElement(DetailGrid, { rows: runRows }),
-          run?.pending_decision
-            ? React.createElement("p", { style: { ...mutedStyle, margin: "10px 0 0", color: "var(--dsw-alias-state-warning-primary, #b26a00)" } }, t("pending"))
+          React.createElement("div", {
+            className: `suhuang-runtime__actions${showRunningActions ? " suhuang-runtime__actions--running" : ""}`,
+          }, actionContent),
+          !hasSpec && connected
+            ? React.createElement("div", { className: "suhuang-runtime__message suhuang-runtime__message--error" }, t("noSpec"))
             : null,
+          visibleError
+            ? React.createElement("div", { role: "alert", className: "suhuang-runtime__message suhuang-runtime__message--error" }, visibleError)
+            : message
+              ? React.createElement("div", { role: "status", className: "suhuang-runtime__message suhuang-runtime__message--success" }, message)
+              : null,
         ),
-        React.createElement("section", { style: cardStyle },
-          React.createElement("h3", { style: { margin: "0 0 10px", fontSize: 14 } }, t("runtimeControls")),
-          React.createElement("div", { style: { display: "flex", gap: 8, flexWrap: "wrap" } },
-            React.createElement(ActionButton, { onClick: () => void start(), disabled: busy || !connected || active || !hasSpec }, t("start")),
-            React.createElement(ActionButton, { onClick: () => void control("pause", t("pause")), disabled: busy || !connected || !canControl }, t("pause")),
-            React.createElement(ActionButton, { onClick: () => void control("resume", t("resume")), disabled: busy || !connected || !canControl }, t("resume")),
-            React.createElement(ActionButton, { onClick: () => void control("stop", t("stop")), disabled: busy || !connected || !canControl }, t("stop")),
+        React.createElement("details", { className: "suhuang-runtime__details" },
+          React.createElement("summary", null, t("connectionDetails")),
+          React.createElement("div", { className: "suhuang-runtime__details-body" },
+            React.createElement(DetailGrid, { rows: [
+              [t("localService"), connected ? t("serviceReady") : backend?.process?.running ? t("backendStarting") : t("backendStopped")],
+              [t("backendPort"), String(backend?.port ?? "—")],
+              [t("status"), connected
+                ? backend?.process?.managed ? t("serviceManaged") : t("serviceExternal")
+                : backend?.process?.running ? t("backendStarting") : t("backendStopped")],
+            ] }),
+            backendError
+              ? React.createElement("div", { className: "suhuang-runtime__message suhuang-runtime__message--error" }, backendError)
+              : null,
+            backend?.process?.managed
+              ? React.createElement(React.Fragment, null,
+                React.createElement(ActionButton, {
+                  tone: "danger",
+                  onClick: () => void stopBackend(),
+                  disabled: backendBusy || active,
+                }, t("closeService")),
+                active ? React.createElement("div", { style: mutedStyle }, t("serviceCloseBlocked")) : null,
+              )
+              : null,
           ),
-          !hasSpec ? React.createElement("p", { style: { ...mutedStyle, margin: "10px 0 0", color: "var(--dsw-alias-state-error-primary)" } }, t("noSpec")) : null,
         ),
-        React.createElement(MessageBlock, { error, message }),
       );
     }
 
