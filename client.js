@@ -5,6 +5,7 @@ window.__ModuleLoader__.load({
     var exports = module.exports;
     Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
     const React = require("react");
+    const { IconListPenOutline16 } = require("@deepseek-ai/dsh-client-ui-primitives");
 
     const DEFAULT_API_BASE_URL = "http://127.0.0.1:8000/api";
     const DEFAULT_CONFIDENCE_THRESHOLD = 0.9;
@@ -13,66 +14,67 @@ window.__ModuleLoader__.load({
     const SETTINGS_NAMESPACE = "suhuang-scroll";
     const SIDEBAR_TAB_ID = "suhuang-scroll:runtime";
     const SETTINGS_BRIDGE_PATH = "/suhuang-scroll/settings";
+    const RUNTIME_BRIDGE_PATH = "/suhuang-scroll/runtime";
     const NS = "settings.suhuangScroll";
 
     const zh = {
       tab: "苏黄共阅",
       title: "苏黄共阅",
-      description: "本地评分 Runtime 的运行默认值与连接设置。运行控制位于侧边栏 Tab。",
-      apiAddress: "Runtime API 地址",
-      apiAddressHint: "仅允许连接 localhost、127.0.0.1 或 ::1；不会保存凭据。",
-      defaultSpec: "默认 Spec",
-      defaultSpecHint: "启动时使用；留空时使用当前 Spec 列表首项。",
-      defaultAdapter: "默认站点适配器",
-      defaultProvider: "默认 Provider",
-      defaultModel: "默认 Model",
-      confidenceThreshold: "运行置信度阈值",
-      confidenceThresholdHint: "范围 0 到 1；仅影响本次人工确认运行的建议阈值。",
-      followRuntime: "跟随 Runtime 默认值（{value}）",
-      followRuntimeUnknown: "跟随 Runtime 默认值",
+      description: "设置本地评分的默认选项和连接方式。评分控制就在侧边栏的「苏黄共阅」页面。",
+      apiAddress: "后端连接地址",
+      apiAddressHint: "只允许连接本机（localhost / 127.0.0.1），不会保存账号或密码。",
+      defaultSpec: "默认评分标准",
+      defaultSpecHint: "开始评分时使用；留空会自动选用第一个。",
+      defaultAdapter: "默认阅卷平台",
+      defaultProvider: "默认模型服务商",
+      defaultModel: "默认评分模型",
+      confidenceThreshold: "评分置信度",
+      confidenceThresholdHint: "范围 0 到 1。数值越高，评分越有把握才自动通过。",
+      followRuntime: "跟随系统默认（{value}）",
+      followRuntimeUnknown: "跟随系统默认",
       save: "保存设置",
       reset: "恢复默认值",
-      resetConfirm: "确认恢复苏黄共阅的默认设置吗？这会修改当前 DSH Profile 设置。",
-      saveSuccess: "设置已保存到当前 DSH Profile。",
+      resetConfirm: "确认恢复苏黄共阅的默认设置吗？这会修改当前本地设置。",
+      saveSuccess: "设置已保存。",
       resetSuccess: "已恢复默认设置。",
-      settingsUnavailable: "DSH Profile 设置暂不可用，当前页面只能显示默认值。",
-      settingsReadOnly: "当前 DSH Profile 设置不可写。",
-      runtimeStatus: "Runtime 连接测试",
-      connectionTest: "连接测试",
+      settingsUnavailable: "当前设置暂不可用，此处只显示默认值。",
+      settingsReadOnly: "当前设置不可修改。",
+      runtimeStatus: "后端连接状态",
+      connectionTest: "测试连接",
       connected: "已连接",
-      notConnected: "Runtime 未连接，请检查 API 地址和本地服务。",
+      notConnected: "后端未连接，请先启动后端或检查连接地址。",
       connectionIdle: "尚未测试连接。",
-      runtimeVersion: "Runtime 版本",
-      protocolVersion: "协议版本",
-      resources: "Runtime 资源",
-      refreshResources: "刷新资源",
-      resourcesIdle: "尚未读取资源。",
-      resourcesLoading: "正在读取 Spec、Provider 和适配器……",
-      resourcesSuccess: "已读取 {specs} 个 Spec、{providers} 个 Provider、{adapters} 个适配器。",
-      resourceFailure: "资源读取失败：{error}",
-      specs: "Spec",
-      providers: "Provider",
-      adapters: "适配器",
+      runtimeVersion: "后端版本",
+      protocolVersion: "接口版本",
+      resources: "可用配置",
+      refreshResources: "刷新配置",
+      resourcesIdle: "尚未读取配置。",
+      resourcesLoading: "正在读取评分标准、模型和阅卷平台……",
+      resourcesSuccess: "已读取 {specs} 套评分标准、{providers} 个模型服务商、{adapters} 个阅卷平台。",
+      resourceFailure: "读取配置失败：{error}",
+      specs: "评分标准",
+      providers: "模型服务商",
+      adapters: "阅卷平台",
       currentTask: "当前任务",
-      runtimeControls: "运行控制",
+      runtimeControls: "评分控制",
       noTask: "当前没有评分任务。",
       status: "状态",
-      adapter: "适配器",
-      spec: "Spec 文件",
+      adapter: "阅卷平台",
+      spec: "评分标准",
       completed: "已完成",
       pending: "待人工确认",
       runError: "运行错误",
-      runtimeUnavailable: "Runtime 不可用：{error}",
+      runtimeUnavailable: "后端不可用：{error}",
       loading: "读取中……",
-      manualOnly: "侧边栏只启动人工确认模式；此处没有成绩提交或自动提交操作。",
+      manualOnly: "侧边栏只启动人工确认模式；这里没有自动提交成绩的操作。",
       start: "启动",
       pause: "暂停",
       resume: "继续",
       stop: "停止",
-      startConfirm: "确认启动一次苏黄共阅人工确认评分任务吗？不会自动提交成绩。",
-      confirmControl: "确认执行“{action}”吗？这会改变本地评分任务状态。",
-      controlSent: "已发送“{action}”操作。",
-      noSpec: "没有可用的默认 Spec，请先在设置主菜单中选择 Spec。",
+      startConfirm: "确认启动一次苏黄共阅评分任务吗？不会自动提交成绩。",
+      confirmControl: "确认执行“{action}”吗？这会改变本地评分任务。",
+      controlSent: "已发送“{action}”。",
+      noSpec: "没有可用的评分标准，请先在设置里选择。",
       state_idle: "空闲",
       state_starting: "启动中",
       state_capturing: "采集中",
@@ -84,65 +86,88 @@ window.__ModuleLoader__.load({
       state_stopped: "已停止",
       state_error: "错误",
       state_unknown: "未知",
+      backendProcess: "后端进程",
+      backendDir: "后端所在文件夹",
+      backendDirHint: "留空会自动识别，一般不用手动填写。",
+      backendRunning: "运行中",
+      backendStopped: "未运行",
+      backendExternal: "外部已运行",
+      backendStarting: "启动中……",
+      backendStopping: "停止中……",
+      startBackend: "启动后端",
+      stopBackend: "停止后端",
+      backendPid: "进程 PID",
+      backendPort: "端口",
+      backendPython: "运行环境",
+      backendNotManaged: "这个后端不是从这里启动的，无法停止。",
+      startBackendConfirm: "确认启动本地苏黄共阅后端吗？",
+      stopBackendConfirm: "确认停止由本插件启动的苏黄共阅后端吗？",
+      backendStarted: "后端已启动并完成检查。",
+      backendStartPending: "后端已启动，正在等待就绪。",
+      backendStoppedMsg: "后端已停止。",
+      backendAlreadyRunning: "后端已在运行。",
+      backendAlreadyStopped: "后端当前未运行。",
+      backendBridgeUnavailable: "后端控制不可用：{error}",
+      backendDirMissing: "未找到后端，请在设置里填写后端所在文件夹。",
     };
     const en = {
       tab: "Suhuang Scroll",
       title: "Suhuang Scroll",
-      description: "Local grading Runtime defaults and connection settings. Runtime controls are in the sidebar tab.",
-      apiAddress: "Runtime API address",
+      description: "Set local grading defaults and connection options. Grading controls live in the sidebar.",
+      apiAddress: "Backend address",
       apiAddressHint: "Only localhost, 127.0.0.1, and ::1 are allowed; credentials are never stored.",
-      defaultSpec: "Default Spec",
-      defaultSpecHint: "Used when starting a run; an empty value uses the first available Spec.",
-      defaultAdapter: "Default site adapter",
-      defaultProvider: "Default Provider",
-      defaultModel: "Default Model",
-      confidenceThreshold: "Run confidence threshold",
-      confidenceThresholdHint: "From 0 to 1; applies to the manual-confirmation run's suggestion threshold.",
-      followRuntime: "Follow Runtime default ({value})",
-      followRuntimeUnknown: "Follow Runtime default",
+      defaultSpec: "Default grading spec",
+      defaultSpecHint: "Used when grading starts; an empty value uses the first available option.",
+      defaultAdapter: "Default grading platform",
+      defaultProvider: "Default model provider",
+      defaultModel: "Default grading model",
+      confidenceThreshold: "Grading confidence",
+      confidenceThresholdHint: "From 0 to 1. Higher values make grading pass automatically only with more confidence.",
+      followRuntime: "Follow system default ({value})",
+      followRuntimeUnknown: "Follow system default",
       save: "Save settings",
       reset: "Restore defaults",
-      resetConfirm: "Restore Suhuang Scroll defaults? This changes the current DSH Profile settings.",
-      saveSuccess: "Settings saved to the current DSH Profile.",
+      resetConfirm: "Restore Suhuang Scroll defaults? This changes the local settings.",
+      saveSuccess: "Settings saved.",
       resetSuccess: "Default settings restored.",
-      settingsUnavailable: "DSH Profile settings are unavailable; this page is showing defaults only.",
-      settingsReadOnly: "The current DSH Profile settings are read-only.",
-      runtimeStatus: "Runtime connection test",
+      settingsUnavailable: "Settings are unavailable; this page is showing defaults only.",
+      settingsReadOnly: "Settings are currently read-only.",
+      runtimeStatus: "Backend connection",
       connectionTest: "Test connection",
       connected: "Connected",
-      notConnected: "Runtime is not connected. Check the API address and local service.",
+      notConnected: "Backend is not connected. Start the backend or check the connection address.",
       connectionIdle: "Connection has not been tested.",
-      runtimeVersion: "Runtime version",
-      protocolVersion: "Protocol version",
-      resources: "Runtime resources",
-      refreshResources: "Refresh resources",
-      resourcesIdle: "Resources have not been read.",
-      resourcesLoading: "Reading Specs, Providers, and adapters…",
-      resourcesSuccess: "Read {specs} Specs, {providers} Providers, and {adapters} adapters.",
-      resourceFailure: "Resource read failed: {error}",
-      specs: "Specs",
-      providers: "Providers",
-      adapters: "Adapters",
+      runtimeVersion: "Backend version",
+      protocolVersion: "Interface version",
+      resources: "Available options",
+      refreshResources: "Refresh options",
+      resourcesIdle: "Options have not been read.",
+      resourcesLoading: "Reading grading specs, models, and platforms…",
+      resourcesSuccess: "Read {specs} grading specs, {providers} model providers, and {adapters} platforms.",
+      resourceFailure: "Failed to read options: {error}",
+      specs: "Grading specs",
+      providers: "Model providers",
+      adapters: "Grading platforms",
       currentTask: "Current task",
-      runtimeControls: "Runtime controls",
+      runtimeControls: "Grading controls",
       noTask: "There is no grading task.",
       status: "Status",
-      adapter: "Adapter",
-      spec: "Spec file",
+      adapter: "Grading platform",
+      spec: "Grading spec",
       completed: "Completed",
       pending: "Pending confirmation",
       runError: "Run error",
-      runtimeUnavailable: "Runtime unavailable: {error}",
+      runtimeUnavailable: "Backend unavailable: {error}",
       loading: "Loading…",
       manualOnly: "The sidebar starts manual-confirmation runs only; it has no score submission or auto-submit action.",
       start: "Start",
       pause: "Pause",
       resume: "Resume",
       stop: "Stop",
-      startConfirm: "Start a Suhuang Scroll manual-confirmation grading run? Scores will not be submitted automatically.",
-      confirmControl: "Confirm “{action}”? This changes the local grading task state.",
+      startConfirm: "Start a Suhuang Scroll grading run? Scores will not be submitted automatically.",
+      confirmControl: "Confirm “{action}”? This changes the local grading task.",
       controlSent: "“{action}” was sent.",
-      noSpec: "No default Spec is available. Select a Spec in the main settings menu first.",
+      noSpec: "No grading spec is available. Select one in settings first.",
       state_idle: "Idle",
       state_starting: "Starting",
       state_capturing: "Capturing",
@@ -154,6 +179,29 @@ window.__ModuleLoader__.load({
       state_stopped: "Stopped",
       state_error: "Error",
       state_unknown: "Unknown",
+      backendProcess: "Backend service",
+      backendDir: "Backend folder",
+      backendDirHint: "Leave empty to auto-detect; usually no need to set this manually.",
+      backendRunning: "Running",
+      backendStopped: "Not running",
+      backendExternal: "Running externally",
+      backendStarting: "Starting…",
+      backendStopping: "Stopping…",
+      startBackend: "Start backend",
+      stopBackend: "Stop backend",
+      backendPid: "PID",
+      backendPort: "Port",
+      backendPython: "Runtime",
+      backendNotManaged: "This backend was not started here, so it cannot be stopped.",
+      startBackendConfirm: "Start the local Suhuang Scroll backend?",
+      stopBackendConfirm: "Stop the Suhuang Scroll backend started here?",
+      backendStarted: "Backend started and passed checks.",
+      backendStartPending: "Backend started; waiting for it to become ready.",
+      backendStoppedMsg: "Backend stopped.",
+      backendAlreadyRunning: "Backend is already running.",
+      backendAlreadyStopped: "Backend is not running.",
+      backendBridgeUnavailable: "Backend control unavailable: {error}",
+      backendDirMissing: "Backend not found. Enter the backend folder in settings.",
     };
 
     function resolveApiBaseUrl(value) {
@@ -210,6 +258,23 @@ window.__ModuleLoader__.load({
       return body;
     }
 
+    async function requestRuntimeBridge(init = {}) {
+      const response = await fetch(RUNTIME_BRIDGE_PATH, {
+        ...init,
+        headers: {
+          accept: "application/json",
+          ...(init.body ? { "content-type": "application/json" } : {}),
+          ...(init.headers ?? {}),
+        },
+        signal: init.signal ?? timeoutSignal(),
+      });
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok || body.ok === false) {
+        throw new Error(typeof body.error === "string" ? body.error : `HTTP ${response.status}`);
+      }
+      return body;
+    }
+
     async function readRuntimeStatus(apiBaseUrl) {
       const [health, automation] = await Promise.all([
         requestJson(apiBaseUrl, "/health"),
@@ -230,6 +295,7 @@ window.__ModuleLoader__.load({
       const threshold = Number(value.confidenceThreshold);
       return {
         apiBaseUrl: String(value.apiBaseUrl ?? DEFAULT_API_BASE_URL).trim() || DEFAULT_API_BASE_URL,
+        backendDir: String(value.backendDir ?? "").trim(),
         defaultSpec: String(value.defaultSpec ?? "").trim(),
         adapter: String(value.adapter ?? "").trim(),
         provider: String(value.provider ?? "").trim(),
@@ -250,7 +316,7 @@ window.__ModuleLoader__.load({
       if (!specPath) throw new Error(zh.noSpec);
       const payload = {
         spec_path: specPath,
-        dev: true,
+        dev: false,
         confidence_threshold: normalized.confidenceThreshold,
       };
       if (normalized.adapter) payload.adapter = normalized.adapter;
@@ -325,7 +391,7 @@ window.__ModuleLoader__.load({
           setBridgeSnapshot(next);
           return next;
         }
-        for (const field of ["apiBaseUrl", "defaultSpec", "adapter", "provider", "model", "confidenceThreshold"]) {
+        for (const field of ["apiBaseUrl", "backendDir", "defaultSpec", "adapter", "provider", "model", "confidenceThreshold"]) {
           await settingsScope.unset(field);
         }
         return settingsScope.getSnapshot();
@@ -377,13 +443,22 @@ window.__ModuleLoader__.load({
         disabled,
         onClick,
         style: {
+          boxSizing: "border-box",
+          height: 32,
           border: "0",
-          borderRadius: 7,
+          borderRadius: 16,
           color: "white",
           background: disabled ? "var(--dsw-alias-bg-layer-3)" : background,
           cursor: disabled ? "not-allowed" : "pointer",
-          padding: "7px 11px",
+          padding: "0 14px",
           font: "inherit",
+          fontSize: 13,
+          lineHeight: "20px",
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 4,
+          whiteSpace: "nowrap",
           opacity: disabled ? 0.55 : 1,
         },
       }, children);
@@ -590,6 +665,16 @@ window.__ModuleLoader__.load({
             onChange: (event) => updateDraft("apiBaseUrl", event.target.value),
           }),
         ),
+        React.createElement("section", { style: cardStyle },
+          React.createElement(TextField, {
+            id: "suhuang-backend-dir",
+            label: t("backendDir"),
+            hint: t("backendDirHint"),
+            value: draft.backendDir,
+            disabled: settingsDisabled,
+            onChange: (event) => updateDraft("backendDir", event.target.value),
+          }),
+        ),
         React.createElement("section", { style: { ...cardStyle, display: "flex", flexDirection: "column", gap: 13 } },
           React.createElement(SelectField, {
             id: "suhuang-default-spec",
@@ -693,6 +778,9 @@ window.__ModuleLoader__.load({
       const [busy, setBusy] = React.useState(false);
       const [error, setError] = React.useState("");
       const [message, setMessage] = React.useState("");
+      const [backend, setBackend] = React.useState(null);
+      const [backendBusy, setBackendBusy] = React.useState(false);
+      const [backendError, setBackendError] = React.useState("");
 
       const refreshStatus = React.useCallback(async () => {
         try {
@@ -774,6 +862,71 @@ window.__ModuleLoader__.load({
         }
       };
 
+      const refreshBackend = React.useCallback(async () => {
+        try {
+          const state = await requestRuntimeBridge();
+          setBackend(state);
+          setBackendError("");
+        } catch (cause) {
+          setBackendError(t("backendBridgeUnavailable", { error: formatError(cause) }));
+        }
+      }, []);
+
+      React.useEffect(() => {
+        if (!visible) return undefined;
+        void refreshBackend();
+        const timer = globalThis.setInterval(() => void refreshBackend(), 5000);
+        return () => globalThis.clearInterval(timer);
+      }, [visible, refreshBackend]);
+
+      const startBackend = async () => {
+        if (!globalThis.confirm(t("startBackendConfirm"))) return;
+        setBackendBusy(true);
+        setBackendError("");
+        try {
+          const state = await requestRuntimeBridge({
+            method: "POST",
+            body: JSON.stringify({ action: "start" }),
+          });
+          setBackend(state);
+          if (state.health) {
+            setMessage(t("backendStarted"));
+          } else if (state.alreadyManaged) {
+            setMessage(t("backendAlreadyRunning"));
+          } else {
+            setMessage(t("backendStartPending"));
+          }
+          await refreshStatus();
+        } catch (cause) {
+          setBackendError(t("backendBridgeUnavailable", { error: formatError(cause) }));
+        } finally {
+          setBackendBusy(false);
+        }
+      };
+
+      const stopBackend = async () => {
+        if (!globalThis.confirm(t("stopBackendConfirm"))) return;
+        setBackendBusy(true);
+        setBackendError("");
+        try {
+          const state = await requestRuntimeBridge({
+            method: "POST",
+            body: JSON.stringify({ action: "stop" }),
+          });
+          setBackend(state);
+          if (state.alreadyStopped) {
+            setMessage(t("backendAlreadyStopped"));
+          } else {
+            setMessage(t("backendStoppedMsg"));
+          }
+          await refreshStatus();
+        } catch (cause) {
+          setBackendError(t("backendBridgeUnavailable", { error: formatError(cause) }));
+        } finally {
+          setBackendBusy(false);
+        }
+      };
+
       const run = automation?.run;
       const connected = Boolean(health && automation);
       const active = Boolean(automation?.active);
@@ -782,15 +935,11 @@ window.__ModuleLoader__.load({
       const runRows = run
         ? [
           [t("status"), runStateLabel(run.state, t)],
-          [t("adapter"), run.adapter || t("followRuntimeUnknown")],
-          [t("spec"), safeBasename(run.spec_path)],
           [t("completed"), String(run.completed_count ?? 0)],
         ]
         : [[t("status"), t("noTask")]];
       if (run?.pending_decision) runRows.push([t("pending"), t("pending")]);
       if (run?.error_message) runRows.push([t("runError"), run.error_message]);
-      const resourceData = catalog.resources;
-      const defaultSpec = effectiveDefaultSpec(settings, catalog.specs);
 
       return React.createElement("div", {
         "data-testid": "suhuang-scroll-runtime-tab",
@@ -798,36 +947,31 @@ window.__ModuleLoader__.load({
       },
         React.createElement("div", null,
           React.createElement("h2", { style: { margin: 0, fontSize: 17 } }, t("title")),
-          React.createElement("p", { style: { ...mutedStyle, margin: "6px 0 0" } }, t("manualOnly")),
         ),
         React.createElement("section", { style: cardStyle },
-          React.createElement("h3", { style: { margin: "0 0 10px", fontSize: 14 } }, t("runtimeStatus")),
-          connected
-            ? React.createElement(DetailGrid, { rows: [
-              [t("status"), t("connected")],
-              [t("runtimeVersion"), health.version ?? "—"],
-              [t("protocolVersion"), health.protocol_version ?? "—"],
-            ] })
-            : React.createElement("p", { style: { ...mutedStyle, margin: 0, color: "var(--dsw-alias-state-error-primary)" } }, error ? t("runtimeUnavailable", { error }) : t("notConnected")),
+          React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, flexWrap: "wrap" } },
+            React.createElement("h3", { style: { margin: 0, fontSize: 14 } }, t("backendProcess")),
+            React.createElement("div", { style: { display: "flex", gap: 8, flexWrap: "wrap" } },
+              React.createElement(ActionButton, { onClick: () => void startBackend(), disabled: backendBusy || Boolean(backend?.process?.running) }, t("startBackend")),
+              React.createElement(ActionButton, { onClick: () => void stopBackend(), disabled: backendBusy || !backend?.process?.managed }, t("stopBackend")),
+            ),
+          ),
+          backendError
+            ? React.createElement("p", { style: { ...mutedStyle, margin: "10px 0 0", color: "var(--dsw-alias-state-error-primary)" } }, backendError)
+            : backend
+              ? React.createElement("p", { style: { ...mutedStyle, margin: "10px 0 0", color: backend.process?.running ? "var(--dsw-alias-state-success-primary)" : undefined } },
+                backend.process?.running ? (backend.process.managed ? t("backendRunning") : t("backendExternal")) : t("backendStopped"))
+              : React.createElement("p", { style: { ...mutedStyle, margin: "10px 0 0" } }, t("loading")),
         ),
         React.createElement("section", { style: cardStyle },
-          React.createElement("h3", { style: { margin: "0 0 10px", fontSize: 14 } }, t("runtimeControls")),
+          React.createElement("h3", { style: { margin: "0 0 10px", fontSize: 14 } }, t("currentTask")),
           React.createElement(DetailGrid, { rows: runRows }),
           run?.pending_decision
             ? React.createElement("p", { style: { ...mutedStyle, margin: "10px 0 0", color: "var(--dsw-alias-state-warning-primary, #b26a00)" } }, t("pending"))
             : null,
         ),
         React.createElement("section", { style: cardStyle },
-          React.createElement("h3", { style: { margin: "0 0 10px", fontSize: 14 } }, t("defaultSpec")),
-          React.createElement(DetailGrid, { rows: [
-            [t("spec"), defaultSpec ? safeBasename(defaultSpec) : t("noSpec")],
-            [t("adapter"), settings.adapter || resourceData?.defaultAdapter || t("followRuntimeUnknown")],
-            [t("defaultProvider"), settings.provider || resourceData?.defaultProvider || t("followRuntimeUnknown")],
-            [t("defaultModel"), settings.model || t("followRuntimeUnknown")],
-          ] }),
-        ),
-        React.createElement("section", { style: cardStyle },
-          React.createElement("h3", { style: { margin: "0 0 10px", fontSize: 14 } }, t("currentTask")),
+          React.createElement("h3", { style: { margin: "0 0 10px", fontSize: 14 } }, t("runtimeControls")),
           React.createElement("div", { style: { display: "flex", gap: 8, flexWrap: "wrap" } },
             React.createElement(ActionButton, { onClick: () => void start(), disabled: busy || !connected || active || !hasSpec }, t("start")),
             React.createElement(ActionButton, { onClick: () => void control("pause", t("pause")), disabled: busy || !connected || !canControl }, t("pause")),
@@ -861,6 +1005,7 @@ window.__ModuleLoader__.load({
         sidebarCtx.effect(() => sidebar.registerTab({
           id: SIDEBAR_TAB_ID,
           title: () => t("tab"),
+          icon: (size) => React.createElement(IconListPenOutline16, { size }),
           order: 60,
           single: true,
           component: (props) => React.createElement(SuhuangRuntimeTab, {

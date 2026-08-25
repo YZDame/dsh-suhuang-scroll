@@ -19,6 +19,15 @@ export function resolveApiBaseUrl(value) {
   return url.toString().replace(/\/$/, "");
 }
 
+export function resolveApiPort(value) {
+  try {
+    const port = Number(new URL(resolveApiBaseUrl(value)).port);
+    return Number.isInteger(port) && port > 0 ? port : 8000;
+  } catch {
+    return 8000;
+  }
+}
+
 function timeoutSignal() {
   return globalThis.AbortSignal?.timeout?.(5000);
 }
@@ -71,6 +80,7 @@ export function normalizeSettings(value = {}) {
   const threshold = Number(value.confidenceThreshold);
   return {
     apiBaseUrl: String(value.apiBaseUrl ?? DEFAULT_API_BASE_URL).trim() || DEFAULT_API_BASE_URL,
+    backendDir: String(value.backendDir ?? "").trim(),
     defaultSpec: String(value.defaultSpec ?? "").trim(),
     adapter: String(value.adapter ?? "").trim(),
     provider: String(value.provider ?? "").trim(),
@@ -89,11 +99,11 @@ export function createStartPayload(settings, specs = []) {
   const normalized = normalizeSettings(settings);
   const specPath = effectiveDefaultSpec(normalized, specs);
   if (!specPath) {
-    throw new Error("没有可用的默认 Spec，请先在设置主菜单中选择 Spec。");
+    throw new Error("没有可用的评分标准，请先在设置里选择。");
   }
   const payload = {
     spec_path: specPath,
-    dev: true,
+    dev: false,
     confidence_threshold: normalized.confidenceThreshold,
   };
   if (normalized.adapter) payload.adapter = normalized.adapter;
