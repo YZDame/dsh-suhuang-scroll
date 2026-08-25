@@ -2,6 +2,23 @@
   "name": "dsh-suhuang-scroll",
   "version": "0.2.0",
   "description": "DeepSeek Harness settings section and sidebar runtime console for Suhuang Scroll",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YZDame/dsh-suhuang-scroll.git"
+  },
+  "homepage": "https://github.com/YZDame/dsh-suhuang-scroll#readme",
+  "bugs": {
+    "url": "https://github.com/YZDame/dsh-suhuang-scroll/issues"
+  },
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "dsh-better-sidebar",
+    "deepseek-harness",
+    "suhuang-scroll",
+    "grading"
+  ],
   "type": "module",
   "main": "index.js",
   "exports": {
@@ -17,6 +34,10 @@
     "README.md",
     "package.json"
   ],
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "check": "node --check index.js && node --check runtime.js && node --check client.js"
+  },
   "dsh": {
     "bundle": {
       "patch": "./cordis.patch.yml"
