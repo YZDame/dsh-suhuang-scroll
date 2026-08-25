@@ -26,8 +26,24 @@ window.__ModuleLoader__.load({
       defaultSpec: "默认评分标准",
       defaultSpecHint: "开始评分时使用；留空会自动选用第一个。",
       defaultAdapter: "默认阅卷平台",
-      defaultProvider: "默认模型服务商",
-      defaultModel: "默认评分模型",
+      modelService: "模型服务",
+      modelServiceHint: "用于识别与评分。配置保存在本机苏黄共阅中，API Key 不会显示或写入插件设置。",
+      defaultProvider: "模型服务商",
+      defaultModel: "模型 ID",
+      defaultModelHint: "填写服务商提供的完整模型标识，例如 Qwen/Qwen3.6-27B。",
+      providerBaseUrl: "Base URL",
+      providerBaseUrlHint: "填写 OpenAI 兼容接口地址，远程服务须使用 HTTPS。",
+      providerApiKey: "API Key",
+      providerApiKeyConfigured: "已配置 API Key；留空保存会保留原密钥。",
+      providerApiKeyMissing: "尚未配置 API Key。",
+      providerApiKeyHint: "密钥只发送到本机后端并保存在用户配置中；留空不会清除已有密钥。",
+      modelConnectionTest: "测试模型连接",
+      modelConnectionIdle: "尚未测试模型连接。",
+      modelConnectionSuccess: "模型服务连接正常。",
+      modelConnectionFailure: "模型服务连接失败：{error}",
+      modelApiKeyRequired: "请填写 API Key，或先保存一个有效密钥。",
+      modelAuthFailed: "API Key 无效或当前账号无权访问该服务（HTTP {status}）。",
+      modelTimeout: "连接超时，请检查 Base URL 和网络。",
       confidenceThreshold: "评分置信度",
       confidenceThresholdHint: "范围 0 到 1。数值越高，评分越有把握才自动通过。",
       followRuntime: "跟随系统默认（{value}）",
@@ -170,8 +186,24 @@ window.__ModuleLoader__.load({
       defaultSpec: "Default grading spec",
       defaultSpecHint: "Used when grading starts; an empty value uses the first available option.",
       defaultAdapter: "Default grading platform",
-      defaultProvider: "Default model provider",
-      defaultModel: "Default grading model",
+      modelService: "Model service",
+      modelServiceHint: "Used for answer recognition and grading. Configuration stays in local Suhuang Scroll; the API key is never shown or stored in plugin settings.",
+      defaultProvider: "Model provider",
+      defaultModel: "Model ID",
+      defaultModelHint: "Enter the complete model identifier supplied by the provider, such as Qwen/Qwen3.6-27B.",
+      providerBaseUrl: "Base URL",
+      providerBaseUrlHint: "Enter an OpenAI-compatible API address. Remote services must use HTTPS.",
+      providerApiKey: "API key",
+      providerApiKeyConfigured: "An API key is configured. Leave this blank to keep it unchanged.",
+      providerApiKeyMissing: "No API key is configured.",
+      providerApiKeyHint: "The key is sent only to the local backend and stored in user configuration. Leaving it blank does not clear an existing key.",
+      modelConnectionTest: "Test model connection",
+      modelConnectionIdle: "Model connection has not been tested.",
+      modelConnectionSuccess: "Model service connection succeeded.",
+      modelConnectionFailure: "Model service connection failed: {error}",
+      modelApiKeyRequired: "Enter an API key or save a valid key first.",
+      modelAuthFailed: "The API key is invalid or the account cannot access this service (HTTP {status}).",
+      modelTimeout: "The connection timed out. Check the Base URL and network.",
       confidenceThreshold: "Grading confidence",
       confidenceThresholdHint: "From 0 to 1. Higher values make grading pass automatically only with more confidence.",
       followRuntime: "Follow system default ({value})",
@@ -402,6 +434,8 @@ window.__ModuleLoader__.load({
         adapter: String(value.adapter ?? "").trim(),
         provider: String(value.provider ?? "").trim(),
         model: String(value.model ?? "").trim(),
+        providerBaseUrl: String(value.providerBaseUrl ?? "").trim(),
+        providerApiKey: "",
         confidenceThreshold: Number.isFinite(threshold)
           ? Math.min(1, Math.max(0, threshold))
           : DEFAULT_CONFIDENCE_THRESHOLD,
@@ -520,6 +554,14 @@ window.__ModuleLoader__.load({
     function friendlyError(error, t) {
       const message = formatError(error);
       return /failed to fetch|fetch failed|networkerror/i.test(message) ? t("connectionFailed") : message;
+    }
+
+    function friendlyProviderError(message, t) {
+      if (/api key is empty/i.test(message)) return t("modelApiKeyRequired");
+      const httpStatus = message.match(/HTTP\s+(401|403)/i)?.[1];
+      if (httpStatus) return t("modelAuthFailed", { status: httpStatus });
+      if (/timed out|timeout/i.test(message)) return t("modelTimeout");
+      return message;
     }
 
     function formatDuration(value) {
@@ -667,7 +709,7 @@ window.__ModuleLoader__.load({
       );
     }
 
-    function TextField({ id, label, hint, value, onChange, disabled, type = "text", min, max, step }) {
+    function TextField({ id, label, hint, value, onChange, disabled, type = "text", min, max, step, placeholder, autoComplete }) {
       return React.createElement("div", null,
         React.createElement(FieldLabel, { htmlFor: id, hint }, label),
         React.createElement("input", {
@@ -677,6 +719,8 @@ window.__ModuleLoader__.load({
           min,
           max,
           step,
+          placeholder,
+          autoComplete,
           disabled,
           onChange,
           style: inputStyle,
@@ -741,27 +785,47 @@ window.__ModuleLoader__.load({
       const t = useTranslation(locale);
       const [draft, setDraft] = React.useState(() => normalizeSettings());
       const [dirty, setDirty] = React.useState(false);
+      const [modelDirty, setModelDirty] = React.useState(false);
       const [saving, setSaving] = React.useState(false);
       const [error, setError] = React.useState("");
       const [message, setMessage] = React.useState("");
       const [connection, setConnection] = React.useState({ state: "idle", health: null, automation: null, error: "" });
+      const [modelConnection, setModelConnection] = React.useState({ state: "idle", ok: null, message: "", apiKeyConfigured: false });
       const [catalog, setCatalog] = React.useState({ state: "idle", data: null, error: "" });
+      const dirtyRef = React.useRef(false);
       const settings = useSettingsBinding(settingsScope);
       const { snapshot } = settings;
 
       React.useEffect(() => {
-        if (!dirty && snapshot.value) setDraft(normalizeSettings(snapshot.value));
+        if (!dirty && snapshot.value) {
+          setDraft((current) => ({
+            ...normalizeSettings(snapshot.value),
+            providerBaseUrl: current.providerBaseUrl,
+            providerApiKey: "",
+          }));
+        }
       }, [dirty, snapshot.value]);
 
       const refreshResources = React.useCallback(async (baseUrl = DEFAULT_API_BASE_URL) => {
         setCatalog({ state: "loading", data: null, error: "" });
         try {
           const normalized = resolveApiBaseUrl(baseUrl);
-          const [resources, specs] = await Promise.all([
+          const [resources, specs, provider] = await Promise.all([
             requestJson(normalized, "/resources"),
             requestJson(normalized, "/specs"),
+            requestJson(normalized, "/provider/status"),
           ]);
-          setCatalog({ state: "ready", data: { resources, specs }, error: "" });
+          setCatalog({ state: "ready", data: { resources, specs, provider }, error: "" });
+          setModelConnection({ state: "idle", ok: null, message: "", apiKeyConfigured: Boolean(provider.api_key_configured) });
+          if (!dirtyRef.current) {
+            setDraft((current) => ({
+              ...current,
+              provider: provider.provider || current.provider,
+              model: provider.model || current.model,
+              providerBaseUrl: provider.base_url || current.providerBaseUrl,
+              providerApiKey: "",
+            }));
+          }
         } catch (cause) {
           setCatalog({ state: "error", data: null, error: formatError(cause) });
         }
@@ -783,8 +847,40 @@ window.__ModuleLoader__.load({
       const updateDraft = (field, value) => {
         setDraft((current) => ({ ...current, [field]: value }));
         setDirty(true);
+        dirtyRef.current = true;
+        if (["provider", "model", "providerBaseUrl", "providerApiKey"].includes(field)) {
+          setModelDirty(true);
+          setModelConnection((current) => ({ ...current, state: "idle", ok: null, message: "" }));
+        }
         setError("");
         setMessage("");
+      };
+
+      const providerPayload = () => ({
+        provider: draft.provider,
+        model: draft.model,
+        base_url: draft.providerBaseUrl,
+        api_key: draft.providerApiKey || undefined,
+      });
+
+      const testModelConnection = async () => {
+        setModelConnection((current) => ({ ...current, state: "loading", ok: null, message: "" }));
+        try {
+          const apiBaseUrl = resolveApiBaseUrl(draft.apiBaseUrl);
+          const result = await requestJson(apiBaseUrl, "/provider/test", {
+            method: "POST",
+            body: JSON.stringify(providerPayload()),
+            signal: globalThis.AbortSignal?.timeout?.(20000),
+          });
+          setModelConnection({
+            state: "ready",
+            ok: result.connection_test?.ok === true,
+            message: result.connection_test?.message || "",
+            apiKeyConfigured: Boolean(result.api_key_configured),
+          });
+        } catch (cause) {
+          setModelConnection((current) => ({ ...current, state: "error", ok: false, message: formatError(cause) }));
+        }
       };
 
       const saveSettings = async () => {
@@ -794,9 +890,26 @@ window.__ModuleLoader__.load({
         try {
           const apiBaseUrl = resolveApiBaseUrl(draft.apiBaseUrl);
           const next = normalizeSettings({ ...draft, apiBaseUrl });
+          const providerResult = modelDirty
+            ? await requestJson(apiBaseUrl, "/provider/config", {
+              method: "PUT",
+              body: JSON.stringify(providerPayload()),
+            })
+            : null;
           await settings.update(next);
-          setDraft(next);
+          setDraft({
+            ...next,
+            provider: providerResult?.provider ?? next.provider,
+            model: providerResult?.model ?? next.model,
+            providerBaseUrl: providerResult?.base_url ?? next.providerBaseUrl,
+            providerApiKey: "",
+          });
           setDirty(false);
+          setModelDirty(false);
+          dirtyRef.current = false;
+          if (providerResult) {
+            setModelConnection((current) => ({ ...current, apiKeyConfigured: Boolean(providerResult.api_key_configured) }));
+          }
           setMessage(t("saveSuccess"));
           void refreshResources(apiBaseUrl);
           void testConnection(apiBaseUrl);
@@ -817,6 +930,8 @@ window.__ModuleLoader__.load({
           const next = normalizeSettings();
           setDraft(next);
           setDirty(false);
+          setModelDirty(false);
+          dirtyRef.current = false;
           setMessage(t("resetSuccess"));
           void refreshResources(next.apiBaseUrl);
           void testConnection(next.apiBaseUrl);
@@ -830,9 +945,6 @@ window.__ModuleLoader__.load({
       const resourceData = catalog.data?.resources ?? { providers: [], modelsByProvider: {}, adapters: [], defaultProvider: null, defaultAdapter: null };
       const specs = catalog.data?.specs?.specs ?? [];
       const defaultProvider = resourceData.defaultProvider || resourceData.providers[0]?.value || "";
-      const providerKey = draft.provider || defaultProvider;
-      const models = resourceData.modelsByProvider?.[providerKey] ?? [];
-      const defaultModel = models.find((option) => option.hint === "默认")?.value || "";
       const defaultAdapter = resourceData.defaultAdapter || resourceData.adapters[0]?.value || "";
       const followRuntime = (value) => value ? t("followRuntime", { value }) : t("followRuntimeUnknown");
       const settingsDisabled = saving || !snapshot.writable || snapshot.status !== "ready";
@@ -891,22 +1003,6 @@ window.__ModuleLoader__.load({
             onChange: (event) => updateDraft("adapter", event.target.value),
             options: [{ value: "", label: followRuntime(defaultAdapter) }, ...resourceData.adapters.map((option) => ({ value: option.value, label: option.label || option.value }))],
           }),
-          React.createElement(SelectField, {
-            id: "suhuang-default-provider",
-            label: t("defaultProvider"),
-            value: draft.provider,
-            disabled: settingsDisabled || catalog.state === "loading",
-            onChange: (event) => updateDraft("provider", event.target.value),
-            options: [{ value: "", label: followRuntime(defaultProvider) }, ...resourceData.providers.map((option) => ({ value: option.value, label: option.label || option.value }))],
-          }),
-          React.createElement(SelectField, {
-            id: "suhuang-default-model",
-            label: t("defaultModel"),
-            value: draft.model,
-            disabled: settingsDisabled || catalog.state === "loading",
-            onChange: (event) => updateDraft("model", event.target.value),
-            options: [{ value: "", label: followRuntime(defaultModel) }, ...models.map((option) => ({ value: option.value, label: option.label || option.value }))],
-          }),
           React.createElement(TextField, {
             id: "suhuang-confidence-threshold",
             label: t("confidenceThreshold"),
@@ -924,6 +1020,63 @@ window.__ModuleLoader__.load({
               if (Number.isFinite(next)) updateDraft("confidenceThreshold", next);
             },
           }),
+        ),
+        React.createElement("section", { style: { ...cardStyle, display: "flex", flexDirection: "column", gap: 13 } },
+          React.createElement("div", null,
+            React.createElement("h3", { style: { margin: 0, fontSize: 15 } }, t("modelService")),
+            React.createElement("p", { style: { ...mutedStyle, margin: "5px 0 0" } }, t("modelServiceHint")),
+          ),
+          React.createElement(SelectField, {
+            id: "suhuang-default-provider",
+            label: t("defaultProvider"),
+            value: draft.provider,
+            disabled: settingsDisabled || catalog.state === "loading",
+            onChange: (event) => updateDraft("provider", event.target.value),
+            options: [{ value: "", label: followRuntime(defaultProvider) }, ...resourceData.providers.map((option) => ({ value: option.value, label: option.label || option.value }))],
+          }),
+          React.createElement(TextField, {
+            id: "suhuang-default-model",
+            label: t("defaultModel"),
+            hint: t("defaultModelHint"),
+            value: draft.model,
+            disabled: settingsDisabled,
+            onChange: (event) => updateDraft("model", event.target.value),
+          }),
+          React.createElement(TextField, {
+            id: "suhuang-provider-base-url",
+            label: t("providerBaseUrl"),
+            hint: t("providerBaseUrlHint"),
+            value: draft.providerBaseUrl,
+            disabled: settingsDisabled,
+            placeholder: "https://api.example.com/v1",
+            onChange: (event) => updateDraft("providerBaseUrl", event.target.value),
+          }),
+          React.createElement(TextField, {
+            id: "suhuang-provider-api-key",
+            label: t("providerApiKey"),
+            hint: t("providerApiKeyHint"),
+            value: draft.providerApiKey,
+            type: "password",
+            autoComplete: "new-password",
+            disabled: settingsDisabled,
+            placeholder: modelConnection.apiKeyConfigured ? "••••••••••••" : "sk-…",
+            onChange: (event) => updateDraft("providerApiKey", event.target.value),
+          }),
+          React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" } },
+            React.createElement("span", { style: { ...mutedStyle, color: modelConnection.apiKeyConfigured ? "var(--dsw-alias-state-success-primary)" : undefined } },
+              t(modelConnection.apiKeyConfigured ? "providerApiKeyConfigured" : "providerApiKeyMissing"),
+            ),
+            React.createElement(ActionButton, {
+              onClick: () => void testModelConnection(),
+              disabled: saving || modelConnection.state === "loading",
+              tone: "secondary",
+            }, modelConnection.state === "loading" ? t("loading") : t("modelConnectionTest")),
+          ),
+          modelConnection.state === "ready" && modelConnection.ok
+            ? React.createElement("p", { role: "status", style: { ...mutedStyle, margin: 0, color: "var(--dsw-alias-state-success-primary)" } }, t("modelConnectionSuccess"))
+            : modelConnection.state === "error" || (modelConnection.state === "ready" && !modelConnection.ok)
+              ? React.createElement("p", { role: "alert", style: { ...mutedStyle, margin: 0, color: "var(--dsw-alias-state-error-primary)" } }, t("modelConnectionFailure", { error: friendlyProviderError(modelConnection.message, t) }))
+              : React.createElement("p", { style: { ...mutedStyle, margin: 0 } }, t("modelConnectionIdle")),
         ),
         React.createElement("section", { style: cardStyle },
           React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, flexWrap: "wrap" } },

@@ -6,7 +6,8 @@ DeepSeek Harness 插件，把本机 Suhuang Scroll Runtime 接入 DSH 的设置�
 
 - Settings 主菜单新增“苏黄共阅”，位于 `dsh-better-sidebar` 的侧边卡片设置项之后。
 - 设置保存到 DSH profile 的 `suhuang-scroll` namespace，不使用浏览器 localStorage。
-- 可配置 Runtime API 地址、默认 Spec、站点适配器、Provider、Model 和置信度阈值。
+- 可配置 Runtime API 地址、默认 Spec、站点适配器、模型服务商、Base URL、模型 ID、API Key 和置信度阈值。
+- 设置页可对当前模型配置执行只读连接测试；测试只访问 OpenAI 兼容服务的 `/models`，不会启动评分。
 - Spec、Provider、Model 和适配器列表来自 Runtime 的 `/api/specs` 与 `/api/resources`。
 - 空的适配器、Provider、Model 表示跟随 Runtime 默认值；API 地址只接受 loopback 主机。
 - 安装 `dsh-better-sidebar` 后，侧边栏 `+` 菜单会出现单实例“苏黄共阅”运行 Tab。
@@ -44,6 +45,6 @@ Suhuang Runtime API 需要允许 DSH Web 的本地来源。默认配置包含 `h
 
 ## 安全边界
 
-插件只接受 loopback API 地址，拒绝账号、密码、查询参数、片段和非本机域名。状态与资源读取是只读的。“开始阅卷”和“结束本次阅卷”会在 UI 中确认；暂停与继续即时生效。“开始阅卷”会按评分置信度阈值自动提交成绩，请确认评分标准与目标阅卷平台无误后再使用。插件不会在无人操作的情况下自行启动评分任务。
+插件只接受 loopback Runtime API 地址，拒绝账号、密码、查询参数、片段和非本机域名。模型服务的远程 Base URL 必须使用 HTTPS；本机模型服务可使用 HTTP。API Key 直接发送给本机 Runtime，保存在系统用户配置中，不写入 DSH profile、不在接口中回显；macOS/Linux 下配置文件权限为 `0600`。状态与资源读取是只读的。“开始阅卷”和“结束本次阅卷”会在 UI 中确认；暂停与继续即时生效。“开始阅卷”会按评分置信度阈值自动提交成绩，请确认评分标准与目标阅卷平台无误后再使用。插件不会在无人操作的情况下自行启动评分任务。
 
 真实评分流程仍要由操作者在 Runtime、Chrome 和目标网站工作流中确认。测试只应使用状态读取和取消确认，不写入成绩、不提交数据。
