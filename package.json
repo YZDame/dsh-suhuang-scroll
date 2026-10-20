@@ -1,7 +1,7 @@
 {
   "name": "dsh-suhuang-scroll",
-  "version": "0.2.0",
-  "description": "DeepSeek Harness settings section and sidebar runtime console for Suhuang Scroll",
+  "version": "0.5.0",
+  "description": "DeepSeek Harness settings section and grading console for Suhuang Scroll",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -14,7 +14,6 @@
   "keywords": [
     "dsh",
     "dsh-plugin",
-    "dsh-better-sidebar",
     "deepseek-harness",
     "suhuang-scroll",
     "grading"
@@ -35,8 +34,16 @@
     "package.json"
   ],
   "scripts": {
+    "build": "node scripts/build-client.mjs",
+    "build:check": "node scripts/build-client.mjs --check",
+    "pretest": "npm run build:check",
     "test": "node --test test/*.test.js",
-    "check": "node --check index.js && node --check runtime.js && node --check client.js"
+    "check": "node --check index.js && node --check runtime.js"
+  },
+  "devDependencies": {
+    "esbuild": "0.27.2",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
   },
   "dsh": {
     "bundle": {
@@ -45,25 +52,23 @@
     "client": {
       "inject": [
         "@deepseek-ai/dsh-client-locale",
-        "@deepseek-ai/dsh-client-runtime",
-        "@deepseek-ai/dsh-client-ui-settings"
+        "@deepseek-ai/dsh-client-ui-settings",
+        "@deepseek-ai/dsh-client-ui-sidebar-right"
       ],
       "platform": "web"
     }
+  },
+  "engines": {
+    "node": ">=20"
   },
   "peerDependencies": {
     "@deepseek-ai/cordis": "*",
     "@deepseek-ai/dsh-commands": "*",
     "@deepseek-ai/dsh-settings": "*",
     "@deepseek-ai/schemastery": "*",
-    "@deepseek-ai/dsh-client-ui-primitives": "*",
+    "@deepseek-ai/dsh-client-locale": "*",
     "@deepseek-ai/dsh-client-ui-settings": "*",
-    "@deepseek-ai/dsh-client-ui-slots": "*",
-    "dsh-better-sidebar": ">=0.4.0"
-  },
-  "peerDependenciesMeta": {
-    "dsh-better-sidebar": {
-      "optional": true
-    }
+    "@deepseek-ai/dsh-client-ui-sidebar-right": "*",
+    "@deepseek-ai/dsh-client-ui-slots": "*"
   }
 }

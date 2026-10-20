@@ -1,19 +1,23 @@
 import { spawn } from "node:child_process";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { settingsNamespace } from "@deepseek-ai/dsh-settings";
 import z from "@deepseek-ai/schemastery";
 
 import {
   DEFAULT_API_BASE_URL,
   DEFAULT_CONFIDENCE_THRESHOLD,
-  backendLaunchLabel,
+  EXPECTED_PROTOCOL_VERSION,
+  buildHostFacts,
   createStartPayload,
   errorMessage,
   formatStatusText,
+  isAllowedRuntimeApiPath,
+  mergeReadiness,
+  normalizeManualAction,
   normalizeSettings,
+  readRuntimeReadiness,
   readRuntimeSpecs,
   readRuntimeStatus,
   requestJson,
@@ -22,15 +26,24 @@ import {
   resolveApiPort,
 } from "./runtime.js";
 
-const SETTINGS_NAMESPACE = settingsNamespace("suhuang-scroll");
-const SETTINGS_SCHEMA = z.object({
-  apiBaseUrl: z.string().default(DEFAULT_API_BASE_URL),
-  backendDir: z.string().default(""),
-  defaultSpec: z.string().default(""),
-  adapter: z.string().default(""),
-  provider: z.string().default(""),
-  model: z.string().default(""),
-  confidenceThreshold: z.number().step(0.01).min(0).max(1).default(DEFAULT_CONFIDENCE_THRESHOLD),
+// DSH identifies an editable settings form by the profile entry id, so the id
+// declared in cordis.patch.yml is the settings key.
+const SETTINGS_NAMESPACE = "suhuang-scroll";
+
+// Fields the settings page may edit. `.volatile()` marks each field as a live
+// configuration reference: `config.<field>.get()` always returns the current
+// value, and the DSH settings service can persist edits into the profile patch.
+export const Config = z.object({
+  apiBaseUrl: z.string().default(DEFAULT_API_BASE_URL).volatile(),
+  backendDir: z.string().default("").volatile(),
+  defaultSpec: z.string().default("").volatile(),
+  adapter: z.string().default("").volatile(),
+  provider: z.string().default("").volatile(),
+  model: z.string().default("").volatile(),
+  confidenceThreshold: z.number().step(0.01).min(0).max(1).default(DEFAULT_CONFIDENCE_THRESHOLD).volatile(),
+  // Auto-submit by default; `manual_confirm` makes the start payload set
+  // `dev:true` so the Runtime asks the operator before writing a score.
+  submitMode: z.union([z.const("auto_submit"), z.const("manual_confirm")]).default("auto_submit").volatile(),
 });
 
 export const name = "suhuang-scroll";
@@ -44,11 +57,49 @@ const SETTINGS_FIELDS = new Set([
   "provider",
   "model",
   "confidenceThreshold",
+  "submitMode",
 ]);
+
+/**
+ * Read one live configuration field. Volatile fields arrive as reference
+ * objects; a static row config still arrives as a plain value.
+ */
+function fieldValue(field) {
+  if (field !== null && typeof field === "object" && typeof field.get === "function") {
+    return field.get();
+  }
+  return field;
+}
+
+/** Project the live plugin config onto the plain settings shape. */
+function readConfigSettings(config = {}) {
+  const plain = {};
+  for (const field of SETTINGS_FIELDS) plain[field] = fieldValue(config[field]);
+  return normalizeSettings(plain);
+}
 
 // Directory of this plugin source (index.js), used to locate both source
 // checkouts and explicitly configured relative backend paths.
 const PLUGIN_DIR = dirname(fileURLToPath(import.meta.url));
+
+// Version of this plugin package, reported as a host fact so the console can
+// show the installed build. A missing/unparsable manifest must not break the
+// plugin, so the fallback is `null` rather than an exception.
+function readPluginVersion() {
+  try {
+    const manifest = JSON.parse(readFileSync(join(PLUGIN_DIR, "package.json"), "utf8"));
+    return typeof manifest.version === "string" && manifest.version ? manifest.version : null;
+  } catch {
+    return null;
+  }
+}
+
+const PLUGIN_VERSION = readPluginVersion();
+
+// The desktop shell exports its build version; ordinary `dsh web` may not.
+const DSH_VERSION = typeof process.env.DSH_CLIENT_VERSION === "string" && process.env.DSH_CLIENT_VERSION
+  ? process.env.DSH_CLIENT_VERSION
+  : null;
 
 // Base CORS allow-list applied to a backend we spawn ourselves. This must stay
 // in sync with core/python/utils/config.py defaults so the DSH Web origin is
@@ -72,6 +123,19 @@ const BASE_ALLOWED_ORIGINS = [
 
 let backendChild = null;
 let backendLastError = null;
+// Last lines the managed backend printed, kept for the connection-details view.
+const backendOutput = [];
+const BACKEND_OUTPUT_LINES = 20;
+
+function rememberBackendOutput(chunk) {
+  for (const line of String(chunk).split(/\r?\n/)) {
+    const text = line.trim();
+    if (text) backendOutput.push(text);
+  }
+  if (backendOutput.length > BACKEND_OUTPUT_LINES) {
+    backendOutput.splice(0, backendOutput.length - BACKEND_OUTPUT_LINES);
+  }
+}
 
 function resolvePythonInterpreter(backendDir) {
   const venv = join(backendDir, ".venv", "bin", "python");
@@ -83,10 +147,36 @@ function isChildAlive() {
   return backendChild !== null && backendChild.exitCode === null && backendChild.signalCode === null;
 }
 
-function buildAllowedOrigins(origin) {
+/**
+ * Build the backend's CORS allow-list. The DSH web server's own origin is
+ * derived from the live server rather than from a request header: a start
+ * request may arrive without an Origin, and a missing entry silently breaks
+ * every browser call to the Runtime API.
+ */
+function buildAllowedOrigins(webServer, origin) {
   const seen = new Set(BASE_ALLOWED_ORIGINS);
+  const port = Number(webServer?.port);
+  if (Number.isInteger(port) && port > 0) {
+    seen.add(`http://127.0.0.1:${port}`);
+    seen.add(`http://localhost:${port}`);
+  }
   if (origin) seen.add(origin);
   return [...seen].join(",");
+}
+
+/** Check whether the running backend answers this page's origin with CORS headers. */
+async function probeOriginAllowance(apiBaseUrl, origin) {
+  if (!origin) return undefined;
+  try {
+    const response = await fetch(`${apiBaseUrl}/health`, {
+      headers: { origin, accept: "application/json" },
+      signal: globalThis.AbortSignal?.timeout?.(4000),
+    });
+    const allowed = response.headers.get("access-control-allow-origin");
+    return { origin, allowed: allowed === origin || allowed === "*" };
+  } catch {
+    return { origin, allowed: false };
+  }
 }
 
 async function probeHealth(apiBaseUrl) {
@@ -115,10 +205,11 @@ function runtimeProcessStatus() {
     running: managed,
     pid: managed && backendChild.pid ? backendChild.pid : null,
     error: backendLastError || undefined,
+    output: backendOutput.length > 0 ? [...backendOutput] : undefined,
   };
 }
 
-async function startRuntimeProcess(currentSettings, origin) {
+async function startRuntimeProcess(currentSettings, origin, webServer) {
   backendLastError = null;
   if (isChildAlive()) return { started: true, alreadyManaged: true };
   const apiBaseUrl = resolveApiBaseUrl(currentSettings.apiBaseUrl);
@@ -135,15 +226,19 @@ async function startRuntimeProcess(currentSettings, origin) {
     ...process.env,
     API_PORT: String(port),
     SUHUANG_API_HOST: "127.0.0.1",
-    ALLOWED_ORIGINS: buildAllowedOrigins(origin),
+    ALLOWED_ORIGINS: buildAllowedOrigins(webServer, origin),
   };
   const command = launch.kind === "binary" ? launch.executable : resolvePythonInterpreter(launch.backendDir);
   const args = launch.kind === "binary" ? [] : ["backend_launcher.py"];
+  backendOutput.length = 0;
   const child = spawn(command, args, {
     cwd: launch.kind === "binary" ? dirname(launch.executable) : launch.backendDir,
     env,
     stdio: ["ignore", "pipe", "pipe"],
   });
+  // Read both pipes: an unread pipe can fill and wedge the backend.
+  child.stdout?.on("data", rememberBackendOutput);
+  child.stderr?.on("data", rememberBackendOutput);
   child.on("error", (cause) => {
     backendLastError = errorMessage(cause);
     backendChild = null;
@@ -184,26 +279,64 @@ async function stopRuntimeProcess() {
   return { stopped: true };
 }
 
+/** Read the optional readiness query overrides off the bridge request URL. */
+function readinessQuery(request, current) {
+  let spec = current.defaultSpec;
+  let adapter = current.adapter;
+  let siteHost = "";
+  try {
+    const url = new URL(String(request.url ?? ""), "http://bridge.invalid");
+    spec = url.searchParams.get("spec") ?? spec;
+    adapter = url.searchParams.get("adapter") ?? adapter;
+    siteHost = url.searchParams.get("site_host") ?? siteHost;
+  } catch {
+    // A malformed bridge URL only means "no query overrides".
+  }
+  return { spec, adapter, site_host: siteHost };
+}
+
+/**
+ * One consolidated host answer for the console. Host-only facts are always
+ * present, even while the Runtime is unreachable; the readiness field degrades
+ * to `{supported:false,data:null,error:null}` instead of failing the request,
+ * so a down/old backend can never turn this bridge into a 500.
+ */
 async function runtimeBridgeState(getCurrentSettings, request) {
   const current = getCurrentSettings();
   const apiBaseUrl = resolveApiBaseUrl(current.apiBaseUrl);
   const origin = String(request.headers?.origin ?? "").trim() || undefined;
-  const probe = await probeHealth(apiBaseUrl);
+  // Health/automation and the consolidated readiness answer ride one round
+  // trip: the console polls this bridge every few seconds and a down backend
+  // must not stack timeouts serially.
+  const [probe, readinessTransport] = await Promise.all([
+    probeHealth(apiBaseUrl),
+    readRuntimeReadiness(apiBaseUrl, readinessQuery(request, current)),
+  ]);
   const launch = resolveBackendLaunch(current.backendDir, { pluginDir: PLUGIN_DIR });
+  const python = launch?.kind === "python" ? resolvePythonInterpreter(launch.backendDir) : null;
+  const hostFacts = buildHostFacts({
+    process: runtimeProcessStatus(),
+    launch: launch ? { ...launch, python } : null,
+    cors: probe ? await probeOriginAllowance(apiBaseUrl, origin) : null,
+    apiBaseUrl,
+    port: resolveApiPort(current.apiBaseUrl),
+    pluginVersion: PLUGIN_VERSION,
+    expectedProtocol: EXPECTED_PROTOCOL_VERSION,
+    dshVersion: DSH_VERSION,
+  });
+  const readiness = mergeReadiness(readinessTransport, hostFacts);
   return {
     ok: true,
     apiBaseUrl,
-    port: resolveApiPort(current.apiBaseUrl),
-    process: {
-      ...runtimeProcessStatus(),
-      backendDir: launch?.backendDir,
-      executable: launch ? backendLaunchLabel(launch) : undefined,
-      mode: launch?.kind,
-      python: launch?.kind === "python" ? resolvePythonInterpreter(launch.backendDir) : undefined,
-    },
+    port: hostFacts.port,
+    origin,
+    process: hostFacts.process,
+    launch: hostFacts.launch,
+    cors: hostFacts.cors,
+    host: hostFacts.host,
+    readiness,
     health: probe?.health ?? null,
     automation: probe?.automation ?? null,
-    origin,
   };
 }
 
@@ -232,6 +365,59 @@ async function readJsonBody(request) {
   return value;
 }
 
+// Runtime endpoints this plugin forwards for the page. The canonical
+// allow-list lives in runtime.js (`RUNTIME_API_PATHS`) so it is unit-testable
+// without loading this host module; a route the running backend does not
+// implement yet simply relays an upstream 404. The Runtime API is a different
+// origin from the DSH client, so the browser enforces CORS on every direct
+// call; forwarding through this same-origin bridge keeps the console working
+// even when the running backend was started with an older allow-list.
+
+async function handleRuntimeApiBridge(request, response, currentSettings) {
+  if (!isLoopbackRequest(request)) {
+    writeJson(response, 403, { ok: false, error: "Runtime API bridge is loopback-only." });
+    return;
+  }
+  if (request.method !== "POST") {
+    writeJson(response, 405, { ok: false, error: "Method not allowed." });
+    return;
+  }
+  try {
+    const body = await readJsonBody(request);
+    const requested = new URL(String(body.path ?? ""), "http://runtime.invalid");
+    if (!isAllowedRuntimeApiPath(requested.pathname)) {
+      throw new Error(`Unsupported runtime path: ${requested.pathname}`);
+    }
+    const method = String(body.method ?? "GET").toUpperCase();
+    if (!["GET", "POST", "PUT"].includes(method)) throw new Error(`Unsupported method: ${method}`);
+    const base = resolveApiBaseUrl(body.apiBaseUrl ?? currentSettings().apiBaseUrl);
+    const upstream = await fetch(`${base}${requested.pathname}${requested.search}`, {
+      method,
+      headers: {
+        accept: "application/json",
+        ...(body.body === undefined ? {} : { "content-type": "application/json" }),
+      },
+      body: body.body === undefined ? undefined : JSON.stringify(body.body),
+      signal: globalThis.AbortSignal?.timeout?.(30000),
+    });
+    const text = await upstream.text();
+    let data;
+    try {
+      data = text ? JSON.parse(text) : {};
+    } catch {
+      data = { raw: text };
+    }
+    if (!upstream.ok) {
+      const detail = typeof data?.detail === "string" ? data.detail : `HTTP ${upstream.status}`;
+      writeJson(response, 200, { ok: false, status: upstream.status, error: detail });
+      return;
+    }
+    writeJson(response, 200, { ok: true, data });
+  } catch (error) {
+    writeJson(response, 400, { ok: false, error: errorMessage(error) });
+  }
+}
+
 function isLoopbackRequest(request) {
   const authority = String(request.headers?.host ?? "").trim().toLowerCase();
   if (authority.startsWith("[")) {
@@ -241,12 +427,11 @@ function isLoopbackRequest(request) {
   return host === "localhost" || host === "127.0.0.1";
 }
 
-function settingsView(settingsContext, settingsScope, config) {
-  const fallback = normalizeSettings(config);
-  if (settingsScope === undefined || settingsContext === undefined) {
+function settingsView(settingsContext, fallbackValue) {
+  if (settingsContext === undefined) {
     return {
       status: "unavailable",
-      value: fallback,
+      value: fallbackValue,
       base: {},
       user: {},
       revision: undefined,
@@ -260,7 +445,7 @@ function settingsView(settingsContext, settingsScope, config) {
     if (descriptor === undefined) {
       return {
         status: "unavailable",
-        value: normalizeSettings(settingsScope.get()),
+        value: fallbackValue,
         base: {},
         user: {},
         revision: undefined,
@@ -269,7 +454,7 @@ function settingsView(settingsContext, settingsScope, config) {
     }
     return {
       status: "ready",
-      value: normalizeSettings(settingsScope.get()),
+      value: normalizeSettings(descriptor.value),
       base: descriptor.base ?? {},
       user: descriptor.user ?? {},
       revision: descriptor.revision,
@@ -278,7 +463,7 @@ function settingsView(settingsContext, settingsScope, config) {
   } catch (error) {
     return {
       status: "unavailable",
-      value: fallback,
+      value: fallbackValue,
       base: {},
       user: {},
       revision: undefined,
@@ -322,11 +507,9 @@ async function handleSettingsBridge(request, response, state) {
     if (body.operation === "reset") {
       await state.settingsContext.settings.replace(SETTINGS_NAMESPACE, {}, expectedRevision);
     } else {
-      await state.settingsContext.settings.update(
-        SETTINGS_NAMESPACE,
-        settingPatch(body.patch ?? {}),
-        expectedRevision,
-      );
+      const patch = settingPatch(body.patch ?? {});
+      validateSettings({ ...state.current(), ...patch });
+      await state.settingsContext.settings.update(SETTINGS_NAMESPACE, patch, expectedRevision);
     }
     writeJson(response, 200, state.view());
   } catch (error) {
@@ -349,11 +532,9 @@ function validateSettings(value) {
   if (!Number.isFinite(value.confidenceThreshold) || value.confidenceThreshold < 0 || value.confidenceThreshold > 1) {
     throw new Error("Suhuang Scroll confidence threshold must be between 0 and 1.");
   }
-}
-
-function settingsBase(config) {
-  if (config.apiBaseUrl === undefined) return undefined;
-  return { apiBaseUrl: config.apiBaseUrl };
+  if (value.submitMode !== "auto_submit" && value.submitMode !== "manual_confirm") {
+    throw new Error('Suhuang Scroll submit mode must be "auto_submit" or "manual_confirm".');
+  }
 }
 
 function registerCommand(ctx, command, description, handler) {
@@ -364,23 +545,25 @@ function registerCommand(ctx, command, description, handler) {
 }
 
 export function apply(ctx, config = {}) {
-  let settingsScope;
   let settingsContext;
 
   const settingsState = {
     get settingsContext() {
       return settingsContext;
     },
-    view: () => settingsView(settingsContext, settingsScope, config),
+    current: () => readConfigSettings(config),
+    view: () => settingsView(settingsContext, readConfigSettings(config)),
   };
 
   ctx.inject(["settings"], (settingsCtx) => {
     settingsContext = settingsCtx;
-    const base = settingsBase(config);
-    settingsScope = settingsCtx.settings.register(SETTINGS_NAMESPACE, SETTINGS_SCHEMA, {
-      ...(base ? { base } : {}),
-      validate: validateSettings,
-    });
+    // This plugin renders its own settings section, so the generated form for
+    // the plugin entry stays off; the entry's Config fields remain editable
+    // through the settings service used by the bridge below.
+    settingsCtx.effect(
+      () => settingsCtx.settings.configure({ auto: false }, ctx.fiber),
+      "suhuang-scroll: settings presentation",
+    );
   });
 
   ctx.effect(
@@ -401,8 +584,17 @@ export function apply(ctx, config = {}) {
     "suhuang-scroll: runtime process bridge",
   );
 
-  const currentSettings = () => normalizeSettings(settingsScope?.get() ?? config);
+  const currentSettings = () => readConfigSettings(config);
   const currentApiBaseUrl = () => resolveApiBaseUrl(currentSettings().apiBaseUrl);
+
+  ctx.effect(
+    () => ctx.webServer.register({
+      kind: "exact",
+      path: "/suhuang-scroll/runtime-api",
+      handler: (request, response) => handleRuntimeApiBridge(request, response, currentSettings),
+    }),
+    "suhuang-scroll: runtime API bridge",
+  );
 
   async function handleRuntimeBridge(request, response) {
     if (!isLoopbackRequest(request)) {
@@ -422,13 +614,71 @@ export function apply(ctx, config = {}) {
       const body = await readJsonBody(request);
       const action = String(body.action ?? "");
       if (action === "start") {
-        const result = await startRuntimeProcess(currentSettings(), origin);
+        const result = await startRuntimeProcess(currentSettings(), origin, ctx.webServer);
+        writeJson(response, 200, { ok: true, ...result, ...(await runtimeBridgeState(currentSettings, request)) });
+        return;
+      }
+      if (action === "restart") {
+        if (backendChild === null) {
+          writeJson(response, 409, {
+            ok: false,
+            error: "当前后端不是由本插件启动，插件无法重启它。请先结束该进程，再点击“启动苏黄共阅”。",
+          });
+          return;
+        }
+        await stopRuntimeProcess();
+        const result = await startRuntimeProcess(currentSettings(), origin, ctx.webServer);
         writeJson(response, 200, { ok: true, ...result, ...(await runtimeBridgeState(currentSettings, request)) });
         return;
       }
       if (action === "stop") {
         const result = await stopRuntimeProcess();
         writeJson(response, 200, { ok: true, ...result, ...(await runtimeBridgeState(currentSettings, request)) });
+        return;
+      }
+      if (action === "manual_action") {
+        // The outer body `action` names this bridge command, so the manual
+        // action rides a sibling field. Accept the plausible client shapes;
+        // `normalizeManualAction` is the single allow-list authority.
+        const requested = body.manualAction
+          ?? body.manual_action
+          ?? body.value
+          ?? body.payload?.action;
+        let manualAction;
+        try {
+          manualAction = normalizeManualAction(requested);
+        } catch (error) {
+          writeJson(response, 400, { ok: false, error: errorMessage(error) });
+          return;
+        }
+        try {
+          const data = await requestJson(currentApiBaseUrl(), "/automation/manual-action", {
+            method: "POST",
+            body: JSON.stringify({ action: manualAction }),
+          });
+          writeJson(response, 200, { ok: true, action: manualAction, data });
+        } catch (error) {
+          const status = Number(error?.status);
+          if (status === 404 || status === 405) {
+            // Older Runtime without the manual-action route: report the
+            // missing capability instead of failing the whole bridge.
+            writeJson(response, 200, {
+              ok: false,
+              supported: false,
+              status,
+              error: "当前 Runtime 版本不支持人工确认操作，请升级 Runtime。",
+            });
+            return;
+          }
+          // Preserve the console: upstream/transport failures are reported in
+          // the body, never as an unhandled bridge error.
+          writeJson(response, 200, {
+            ok: false,
+            supported: true,
+            status: Number.isInteger(status) ? status : null,
+            error: errorMessage(error),
+          });
+        }
         return;
       }
       writeJson(response, 400, { ok: false, error: `Unknown runtime action: ${action}` });
@@ -487,7 +737,7 @@ export function apply(ctx, config = {}) {
       const refusal = requireConfirmation(invocation.rawInput, "suhuang-backend-start");
       if (refusal) return refusal;
       try {
-        const result = await startRuntimeProcess(currentSettings(), undefined);
+        const result = await startRuntimeProcess(currentSettings(), undefined, ctx.webServer);
         if (result.alreadyManaged) {
           return { kind: "success", text: "Suhuang Scroll backend is already running." };
         }
