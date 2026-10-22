@@ -55,7 +55,7 @@ export function hostPayload({ run = null, checks = readinessChecks(), ready = tr
     process: { managed: true, running: true, pid: 4242 },
     launch: { kind: "binary", backendDir: "/Users/teacher/.local/suhuang-scroll" },
     cors: { origin: "http://127.0.0.1:3080", allowed: true },
-    host: { pluginVersion: "0.4.0", expectedProtocol: 1 },
+    host: { pluginVersion: "0.7.0", expectedProtocol: 1 },
     readiness: {
       supported: true,
       error: null,
@@ -70,7 +70,7 @@ export function hostPayload({ run = null, checks = readinessChecks(), ready = tr
             {
               extension_id: "a".repeat(32),
               name: "Suhuang Scroll Bridge",
-              version: "0.6.4",
+              version: "0.7.0",
               protocol_version: 1,
               protocol_compatible: true,
               version_matches_runtime: true,
@@ -97,7 +97,7 @@ export function hostPayload({ run = null, checks = readinessChecks(), ready = tr
           selected_enabled: true,
         },
         site: { host: "www.zhixue.com", matched_adapter_id: "zhixue" },
-        runtime: { version: "0.6.4", protocol_version: 1, pid: 4242, uptime_seconds: 120 },
+        runtime: { version: "0.7.0", protocol_version: 1, pid: 4242, uptime_seconds: 120 },
         automation: {
           active: Boolean(run),
           run_id: run ? "run-synthetic" : null,
@@ -109,7 +109,7 @@ export function hostPayload({ run = null, checks = readinessChecks(), ready = tr
         },
       },
     },
-    health: health ? { status: "ok", version: "0.6.4", protocol_version: 1 } : null,
+    health: health ? { status: "ok", version: "0.7.0", protocol_version: 1 } : null,
     automation: { active: Boolean(run), run },
   };
 }

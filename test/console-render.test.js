@@ -81,6 +81,50 @@ test("running state renders TUI-parity metrics and no fake total", async () => {
   assert.doesNotMatch(html, /\b13\s*\/\s*\d+/);
 });
 
+test("error state exposes provider boundary, retryability, and answer image evidence", async () => {
+  const hash = "a".repeat(64);
+  const { html } = await bootAndRender("main", {
+    run: runningRun({
+      state: "error",
+      error_message: "模型调用失败（HTTP 402）",
+      last_error: {
+        stage: "grade",
+        error_code: "provider_http_error",
+        message: "模型调用失败（HTTP 402）",
+        local_status: 502,
+        upstream_status: 402,
+        provider_id: "deepseek",
+        model_id: "deepseek-flash",
+        request_id: "request-safe-id",
+        retryable: false,
+        audit_evidence: {
+          paper_key: "paper-23",
+          paper_key_source: "adapter_id",
+          image_sha256: hash,
+          image_hash_status: "present",
+          image_mime_type: "image/png",
+          image_byte_size: 128,
+          image_width: 500,
+          image_height: 200,
+          capture_source: "canvas:answer",
+        },
+      },
+    }),
+  });
+  assert.match(html, /最近错误详情/);
+  assert.match(html, /provider_http_error/);
+  assert.match(html, /Runtime 状态码/);
+  assert.match(html, /502/);
+  assert.match(html, /上游状态码/);
+  assert.match(html, /402/);
+  assert.match(html, /deepseek-flash/);
+  assert.match(html, /request-safe-id/);
+  assert.match(html, /不要自动重试/);
+  assert.match(html, /paper-23/);
+  assert.match(html, new RegExp(hash));
+  assert.match(html, /canvas:answer/);
+});
+
 test("awaiting state renders the pending decision card with review flags", async () => {
   const { html } = await bootAndRender("main", { run: awaitingRun() });
   assert.match(html, /需要你确认/);
@@ -90,9 +134,28 @@ test("awaiting state renders the pending decision card with review flags", async
 });
 
 test("completed state renders the after-run summary", async () => {
-  const { html } = await bootAndRender("main", { run: completedRun() });
+  const { html } = await bootAndRender("main", {
+    run: completedRun({
+      last_record: {
+        timestamp: "2026-10-18T13:00:00+08:00",
+        suggested_score: 8.5,
+        confidence: 0.92,
+        status: "submitted",
+        model_diagnostics: { provider_id: "deepseek", model_id: "deepseek-flash" },
+        audit_evidence: {
+          paper_key: "paper-24",
+          paper_key_source: "adapter_id",
+          image_sha256: "b".repeat(64),
+          image_hash_status: "present",
+        },
+      },
+    }),
+  });
   assert.match(html, /本轮阅卷已完成/);
   assert.match(html, /8\.5/);
+  assert.match(html, /最近答卷的模型与图像证据/);
+  assert.match(html, /paper-24/);
+  assert.match(html, /deepseek-flash/);
 });
 
 test("setup state renders the blocking fix and its localized label", async () => {
