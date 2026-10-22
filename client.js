@@ -208,6 +208,26 @@ var zh = {
   runSubmitLabel: "\u63D0\u4EA4\u65B9\u5F0F",
   runStageLabel: "\u5F53\u524D\u9636\u6BB5",
   runConfigLabel: "\u672C\u6B21\u914D\u7F6E",
+  diagnosticsTitle: "\u9519\u8BEF\u8BCA\u65AD\u4E0E\u7B54\u5377\u8BC1\u636E",
+  diagnosticsErrorTitle: "\u6700\u8FD1\u9519\u8BEF\u8BE6\u60C5",
+  diagnosticsRecordTitle: "\u6700\u8FD1\u7B54\u5377\u7684\u6A21\u578B\u4E0E\u56FE\u50CF\u8BC1\u636E",
+  diagnosticsStage: "\u9519\u8BEF\u9636\u6BB5",
+  diagnosticsCode: "\u9519\u8BEF\u4EE3\u7801",
+  diagnosticsMessage: "\u9519\u8BEF\u4FE1\u606F",
+  diagnosticsLocalStatus: "Runtime \u72B6\u6001\u7801",
+  diagnosticsUpstreamStatus: "\u4E0A\u6E38\u72B6\u6001\u7801",
+  diagnosticsProvider: "\u670D\u52A1\u5546",
+  diagnosticsModel: "\u6A21\u578B",
+  diagnosticsRequestId: "\u8BF7\u6C42\u7F16\u53F7",
+  diagnosticsRetryable: "\u53EF\u5426\u91CD\u8BD5",
+  diagnosticsRetryableYes: "\u53EF\u4EE5\u91CD\u8BD5",
+  diagnosticsRetryableNo: "\u4E0D\u8981\u81EA\u52A8\u91CD\u8BD5",
+  diagnosticsPaperKey: "\u7B54\u5377\u6807\u8BC6",
+  diagnosticsPaperKeySource: "\u6807\u8BC6\u6765\u6E90",
+  diagnosticsImageHash: "\u56FE\u50CF SHA-256",
+  diagnosticsImageHashStatus: "\u56FE\u50CF\u54C8\u5E0C\u72B6\u6001",
+  diagnosticsImageDetails: "\u56FE\u50CF\u5C5E\u6027",
+  diagnosticsCaptureSource: "\u6355\u83B7\u6765\u6E90",
   awaitingSuggested: "\u5EFA\u8BAE {score} \u5206",
   awaitingConfidence: "\u7F6E\u4FE1\u5EA6 {value}",
   awaitingFlags: "\u590D\u6838\u63D0\u793A",
@@ -270,7 +290,7 @@ var zh = {
   apiKeyHint: "\u5BC6\u94A5\u53EA\u53D1\u9001\u5230\u672C\u673A\u540E\u7AEF\u5E76\u4FDD\u5B58\u5728\u7528\u6237\u914D\u7F6E\u4E2D\u3002",
   testConnection: "\u6D4B\u8BD5\u6A21\u578B\u8FDE\u63A5",
   testing: "\u6B63\u5728\u6D4B\u8BD5\u2026",
-  testSuccess: "\u6A21\u578B\u670D\u52A1\u8FDE\u63A5\u6B63\u5E38\u3002",
+  testSuccess: "\u5F53\u524D\u6A21\u578B\u5DF2\u901A\u8FC7\u6D4B\u8BD5\u56FE\u7247\u7684\u771F\u5B9E\u8C03\u7528\u9A8C\u8BC1\u3002",
   testFailed: "\u6A21\u578B\u670D\u52A1\u8FDE\u63A5\u5931\u8D25\uFF1A{error}",
   followRuntime: "\u8DDF\u968F\u7CFB\u7EDF\u9ED8\u8BA4\uFF08{value}\uFF09",
   followRuntimeUnknown: "\u8DDF\u968F\u7CFB\u7EDF\u9ED8\u8BA4",
@@ -561,6 +581,26 @@ var en = {
   runSubmitLabel: "Submit mode",
   runStageLabel: "Stage",
   runConfigLabel: "Current configuration",
+  diagnosticsTitle: "Error diagnostics and answer evidence",
+  diagnosticsErrorTitle: "Latest error details",
+  diagnosticsRecordTitle: "Latest answer model and image evidence",
+  diagnosticsStage: "Error stage",
+  diagnosticsCode: "Error code",
+  diagnosticsMessage: "Message",
+  diagnosticsLocalStatus: "Runtime status",
+  diagnosticsUpstreamStatus: "Upstream status",
+  diagnosticsProvider: "Provider",
+  diagnosticsModel: "Model",
+  diagnosticsRequestId: "Request ID",
+  diagnosticsRetryable: "Retryable",
+  diagnosticsRetryableYes: "Yes",
+  diagnosticsRetryableNo: "Do not retry automatically",
+  diagnosticsPaperKey: "Answer key",
+  diagnosticsPaperKeySource: "Key source",
+  diagnosticsImageHash: "Image SHA-256",
+  diagnosticsImageHashStatus: "Image hash status",
+  diagnosticsImageDetails: "Image details",
+  diagnosticsCaptureSource: "Capture source",
   awaitingSuggested: "Suggested {score}",
   awaitingConfidence: "Confidence {value}",
   awaitingFlags: "Review flags",
@@ -623,7 +663,7 @@ var en = {
   apiKeyHint: "The key is sent only to the local backend and stored in user configuration.",
   testConnection: "Test model connection",
   testing: "Testing\u2026",
-  testSuccess: "Model service connection succeeded.",
+  testSuccess: "The selected model successfully processed a synthetic test image.",
   testFailed: "Model service connection failed: {error}",
   followRuntime: "Follow system default ({value})",
   followRuntimeUnknown: "Follow system default",
@@ -753,11 +793,11 @@ var en = {
 var dictionaries = { zh, en };
 
 // src/client/slots.jsx
-var import_react12 = __toESM(require("react"), 1);
+var import_react13 = __toESM(require("react"), 1);
 var import_dsh_client_ui_primitives10 = require("@deepseek-ai/dsh-client-ui-primitives");
 
 // src/client/components/ConsolePage.jsx
-var import_react10 = __toESM(require("react"), 1);
+var import_react11 = __toESM(require("react"), 1);
 var import_dsh_client_ui_primitives8 = require("@deepseek-ai/dsh-client-ui-primitives");
 
 // src/client/components/use-console.jsx
@@ -2384,15 +2424,74 @@ function ConnectionDetails({ c }) {
 }
 
 // src/client/components/panels.jsx
-var import_react6 = __toESM(require("react"), 1);
+var import_react7 = __toESM(require("react"), 1);
 var import_dsh_client_ui_primitives5 = require("@deepseek-ai/dsh-client-ui-primitives");
 
-// src/client/components/dialogs.jsx
+// src/client/components/AutomationDiagnostics.jsx
 var import_react4 = __toESM(require("react"), 1);
+function AutomationDiagnostics({ t, run }) {
+  const error = run?.last_error ?? null;
+  const record = run?.pending_decision ?? run?.last_record ?? null;
+  const evidence = error?.audit_evidence ?? record?.audit_evidence ?? null;
+  const model = error ?? record?.model_diagnostics ?? null;
+  const message = error?.message || run?.error_message || "";
+  const rows = [];
+  const add = (label, value) => {
+    if (value !== void 0 && value !== null && value !== "") rows.push([label, String(value)]);
+  };
+  if (error) {
+    add(t("diagnosticsStage"), error.stage);
+    add(t("diagnosticsCode"), error.error_code);
+    add(t("diagnosticsLocalStatus"), error.local_status);
+    add(t("diagnosticsUpstreamStatus"), error.upstream_status);
+    add(t("diagnosticsRequestId"), error.request_id);
+    if (typeof error.retryable === "boolean") {
+      add(t("diagnosticsRetryable"), t(error.retryable ? "diagnosticsRetryableYes" : "diagnosticsRetryableNo"));
+    }
+  }
+  add(t("diagnosticsProvider"), model?.provider_id);
+  add(t("diagnosticsModel"), model?.model_id);
+  if (evidence) {
+    add(t("diagnosticsPaperKey"), evidence.paper_key);
+    add(t("diagnosticsPaperKeySource"), evidence.paper_key_source);
+    add(t("diagnosticsImageHash"), evidence.image_sha256);
+    add(t("diagnosticsImageHashStatus"), evidence.image_hash_status);
+    const imageDetails = [
+      evidence.image_mime_type,
+      Number.isFinite(evidence.image_byte_size) ? `${evidence.image_byte_size} bytes` : "",
+      Number.isFinite(evidence.image_width) && Number.isFinite(evidence.image_height) ? `${evidence.image_width}\xD7${evidence.image_height}` : ""
+    ].filter(Boolean).join(" \xB7 ");
+    add(t("diagnosticsImageDetails"), imageDetails);
+    add(t("diagnosticsCaptureSource"), evidence.capture_source);
+  }
+  if (!error && rows.length === 0) return null;
+  return import_react4.default.createElement(
+    "section",
+    { className: "ss-diagnostics", "aria-label": t("diagnosticsTitle") },
+    import_react4.default.createElement("strong", null, t(error ? "diagnosticsErrorTitle" : "diagnosticsRecordTitle")),
+    message ? import_react4.default.createElement(
+      "p",
+      { className: "ss-diagnostics__message" },
+      import_react4.default.createElement("strong", null, `${t("diagnosticsMessage")}: `),
+      message
+    ) : null,
+    rows.length ? import_react4.default.createElement(
+      "dl",
+      { className: "ss-diagnostics__list" },
+      ...rows.flatMap(([label, value]) => [
+        import_react4.default.createElement("dt", { key: `${label}-label` }, label),
+        import_react4.default.createElement("dd", { key: `${label}-value` }, value)
+      ])
+    ) : null
+  );
+}
+
+// src/client/components/dialogs.jsx
+var import_react5 = __toESM(require("react"), 1);
 var import_dsh_client_ui_primitives3 = require("@deepseek-ai/dsh-client-ui-primitives");
 function ConfirmModal({ confirm, onClose, t }) {
   if (!confirm) return null;
-  return import_react4.default.createElement(
+  return import_react5.default.createElement(
     import_dsh_client_ui_primitives3.Modal,
     {
       open: true,
@@ -2400,11 +2499,11 @@ function ConfirmModal({ confirm, onClose, t }) {
       title: confirm.title,
       closeLabel: t("cancel"),
       className: "ss-modal",
-      footer: import_react4.default.createElement(
+      footer: import_react5.default.createElement(
         "div",
         { className: "ss-sheet__footer" },
-        import_react4.default.createElement(import_dsh_client_ui_primitives3.Button, { size: "sm", variant: "outline", onClick: onClose }, t("cancel")),
-        import_react4.default.createElement(
+        import_react5.default.createElement(import_dsh_client_ui_primitives3.Button, { size: "sm", variant: "outline", onClick: onClose }, t("cancel")),
+        import_react5.default.createElement(
           import_dsh_client_ui_primitives3.Button,
           {
             size: "sm",
@@ -2419,18 +2518,18 @@ function ConfirmModal({ confirm, onClose, t }) {
         )
       )
     },
-    import_react4.default.createElement(
+    import_react5.default.createElement(
       "div",
       { className: "ss-sheet" },
-      import_react4.default.createElement("p", { className: "ss-surface__body" }, confirm.body ?? "")
+      import_react5.default.createElement("p", { className: "ss-surface__body" }, confirm.body ?? "")
     )
   );
 }
 function ImportSpecDialog({ open, onClose, onImport, t, busy = false }) {
-  const [message, setMessage] = import_react4.default.useState("");
-  const [error, setError] = import_react4.default.useState("");
-  const inputRef = import_react4.default.useRef(null);
-  import_react4.default.useEffect(() => {
+  const [message, setMessage] = import_react5.default.useState("");
+  const [error, setError] = import_react5.default.useState("");
+  const inputRef = import_react5.default.useRef(null);
+  import_react5.default.useEffect(() => {
     if (!open) {
       setMessage("");
       setError("");
@@ -2450,7 +2549,7 @@ function ImportSpecDialog({ open, onClose, onImport, t, busy = false }) {
       setError(t("importFailed", { error: cause instanceof Error ? cause.message : String(cause) }));
     }
   };
-  return import_react4.default.createElement(
+  return import_react5.default.createElement(
     import_dsh_client_ui_primitives3.Modal,
     {
       open: true,
@@ -2458,19 +2557,19 @@ function ImportSpecDialog({ open, onClose, onImport, t, busy = false }) {
       title: t("specImportTitle"),
       closeLabel: t("close"),
       className: "ss-modal",
-      footer: import_react4.default.createElement(
+      footer: import_react5.default.createElement(
         import_dsh_client_ui_primitives3.Button,
         { size: "sm", variant: "primary", onClick: onClose },
         t("guidanceClose")
       )
     },
-    import_react4.default.createElement(
+    import_react5.default.createElement(
       "div",
       { className: "ss-sheet" },
-      import_react4.default.createElement(
+      import_react5.default.createElement(
         "div",
         { className: "ss-form__row" },
-        import_react4.default.createElement(
+        import_react5.default.createElement(
           "button",
           {
             type: "button",
@@ -2482,35 +2581,35 @@ function ImportSpecDialog({ open, onClose, onImport, t, busy = false }) {
           },
           busy ? t("importingSpec") : t("importSpec")
         ),
-        import_react4.default.createElement("input", {
+        import_react5.default.createElement("input", {
           ref: inputRef,
           type: "file",
           accept: ".md,text/markdown",
           hidden: true,
           onChange: handleFile
         }),
-        import_react4.default.createElement("p", { className: "ss-form__hint" }, t("importHint"))
+        import_react5.default.createElement("p", { className: "ss-form__hint" }, t("importHint"))
       ),
-      message ? import_react4.default.createElement(InlineNote, { tone: "success" }, message) : null,
-      error ? import_react4.default.createElement(InlineNote, { tone: "error" }, error) : null
+      message ? import_react5.default.createElement(InlineNote, { tone: "success" }, message) : null,
+      error ? import_react5.default.createElement(InlineNote, { tone: "error" }, error) : null
     )
   );
 }
 function NewSiteHelp({ t, show }) {
-  return import_react4.default.createElement(
+  return import_react5.default.createElement(
     "details",
     { className: "ss-details" },
-    import_react4.default.createElement("summary", null, t("newSite")),
-    import_react4.default.createElement(
+    import_react5.default.createElement("summary", null, t("newSite")),
+    import_react5.default.createElement(
       "div",
       { className: "ss-details__body" },
-      import_react4.default.createElement("p", { className: "ss-note" }, t("newSiteHint")),
-      import_react4.default.createElement(
+      import_react5.default.createElement("p", { className: "ss-note" }, t("newSiteHint")),
+      import_react5.default.createElement(
         "label",
         { className: "ss-form__label", htmlFor: "suhuang-adapter-prompt" },
         t("agentPrompt")
       ),
-      import_react4.default.createElement("textarea", {
+      import_react5.default.createElement("textarea", {
         id: "suhuang-adapter-prompt",
         className: "ss-prompt",
         readOnly: true,
@@ -2518,7 +2617,7 @@ function NewSiteHelp({ t, show }) {
         rows: 6,
         onFocus: (event) => event.target.select()
       }),
-      import_react4.default.createElement(
+      import_react5.default.createElement(
         import_dsh_client_ui_primitives3.Button,
         {
           size: "sm",
@@ -2532,7 +2631,7 @@ function NewSiteHelp({ t, show }) {
 }
 
 // src/client/components/ReadinessList.jsx
-var import_react5 = __toESM(require("react"), 1);
+var import_react6 = __toESM(require("react"), 1);
 var import_dsh_client_ui_primitives4 = require("@deepseek-ai/dsh-client-ui-primitives");
 var DOT_STATE = {
   ok: "done",
@@ -2542,12 +2641,12 @@ var DOT_STATE = {
   info: "ongoing"
 };
 function ReadinessList({ rows, t, describe, fixLabel: fixLabel2, onFix, disabled = false }) {
-  return import_react5.default.createElement(
+  return import_react6.default.createElement(
     "ul",
     { className: "ss-readiness", "aria-label": t("checklistTitle") },
     ...rows.map((row) => {
       const fix = row.status === "ok" ? null : row.fixes[0] ?? null;
-      return import_react5.default.createElement(
+      return import_react6.default.createElement(
         "li",
         {
           key: row.id,
@@ -2555,21 +2654,21 @@ function ReadinessList({ rows, t, describe, fixLabel: fixLabel2, onFix, disabled
           "data-status": row.status,
           "data-blocking": row.blocking ? "true" : "false"
         },
-        import_react5.default.createElement(
+        import_react6.default.createElement(
           "span",
           { className: "ss-ready-row__dot" },
-          import_react5.default.createElement(import_dsh_client_ui_primitives4.StateDot, { state: DOT_STATE[row.status] ?? "idle", size: 8 })
+          import_react6.default.createElement(import_dsh_client_ui_primitives4.StateDot, { state: DOT_STATE[row.status] ?? "idle", size: 8 })
         ),
-        import_react5.default.createElement(
+        import_react6.default.createElement(
           "div",
           { className: "ss-ready-row__text" },
-          import_react5.default.createElement("span", { className: "ss-ready-row__label" }, t(row.labelKey)),
-          import_react5.default.createElement("span", { className: "ss-ready-row__detail", title: describe(row) }, describe(row))
+          import_react6.default.createElement("span", { className: "ss-ready-row__label" }, t(row.labelKey)),
+          import_react6.default.createElement("span", { className: "ss-ready-row__detail", title: describe(row) }, describe(row))
         ),
-        fix ? import_react5.default.createElement(
+        fix ? import_react6.default.createElement(
           "span",
           { className: "ss-ready-row__action" },
-          import_react5.default.createElement(
+          import_react6.default.createElement(
             import_dsh_client_ui_primitives4.Button,
             {
               size: "sm",
@@ -2590,25 +2689,25 @@ function ConfigSummary({ c }) {
   const { t, settings, catalog, runView, adapterLabel } = c;
   const specs = catalog.specs ?? [];
   const spec = c.hasSpec ? safeBasename(settings.defaultSpec || specs[0]?.value || "") : t("specDetailNone");
-  return import_react6.default.createElement(
+  return import_react7.default.createElement(
     "div",
     { className: "ss-summary-grid" },
-    import_react6.default.createElement(FieldRow, {
+    import_react7.default.createElement(FieldRow, {
       label: t("defaultSpec"),
       value: spec,
       muted: !c.hasSpec,
       title: settings.defaultSpec || specs[0]?.value || ""
     }),
-    import_react6.default.createElement(FieldRow, {
+    import_react7.default.createElement(FieldRow, {
       label: t("defaultAdapter"),
       value: adapterLabel || t("followRuntimeUnknown"),
       muted: !adapterLabel
     }),
-    import_react6.default.createElement(FieldRow, {
+    import_react7.default.createElement(FieldRow, {
       label: t("submitModeLabel"),
       value: t(settings.submitMode === "manual_confirm" ? "manualConfirm" : "autoSubmit")
     }),
-    import_react6.default.createElement(FieldRow, {
+    import_react7.default.createElement(FieldRow, {
       label: t("confidenceLabel"),
       value: Number(settings.confidenceThreshold).toFixed(2)
     })
@@ -2616,13 +2715,13 @@ function ConfigSummary({ c }) {
 }
 function PrimaryActionBar({ c, onConfigure, secondary = [] }) {
   const { t, primaryAction } = c;
-  return import_react6.default.createElement(
-    import_react6.default.Fragment,
+  return import_react7.default.createElement(
+    import_react7.default.Fragment,
     null,
-    import_react6.default.createElement(
+    import_react7.default.createElement(
       "div",
       { className: "ss-primary-block" },
-      import_react6.default.createElement(
+      import_react7.default.createElement(
         import_dsh_client_ui_primitives5.Button,
         {
           className: "ss-btn--hero",
@@ -2633,39 +2732,39 @@ function PrimaryActionBar({ c, onConfigure, secondary = [] }) {
         },
         primaryAction.label
       ),
-      import_react6.default.createElement(
+      import_react7.default.createElement(
         import_dsh_client_ui_primitives5.Button,
         { size: "md", variant: "outline", onClick: onConfigure },
         t("configure")
       ),
       ...secondary
     ),
-    primaryAction.hint ? import_react6.default.createElement("p", { className: "ss-primary-block__hint" }, primaryAction.hint) : null
+    primaryAction.hint ? import_react7.default.createElement("p", { className: "ss-primary-block__hint" }, primaryAction.hint) : null
   );
 }
 function OfflinePanel({ c, onConfigure }) {
   const { t } = c;
-  return import_react6.default.createElement(
-    import_react6.default.Fragment,
+  return import_react7.default.createElement(
+    import_react7.default.Fragment,
     null,
-    import_react6.default.createElement(
+    import_react7.default.createElement(
       "div",
       { className: "ss-surface" },
-      import_react6.default.createElement(
+      import_react7.default.createElement(
         "h2",
         { className: "ss-run__title" },
         c.connection === "reconnecting" ? t("reconnectingTitle") : t("serviceTitle")
       ),
-      import_react6.default.createElement(
+      import_react7.default.createElement(
         "p",
         { className: "ss-run__description" },
         c.connection === "reconnecting" ? t("reconnectingDescription") : t("serviceDescription")
       ),
-      c.state?.lastError ? import_react6.default.createElement(InlineNote, { tone: "error" }, t("runtimeUnavailable", { error: c.state.lastError })) : null,
-      import_react6.default.createElement(
+      c.state?.lastError ? import_react7.default.createElement(InlineNote, { tone: "error" }, t("runtimeUnavailable", { error: c.state.lastError })) : null,
+      import_react7.default.createElement(
         "div",
         { className: "ss-actions" },
-        import_react6.default.createElement(
+        import_react7.default.createElement(
           import_dsh_client_ui_primitives5.Button,
           {
             size: "md",
@@ -2675,27 +2774,27 @@ function OfflinePanel({ c, onConfigure }) {
           },
           c.busy.runtime ? t("startProductPending") : t("startProduct")
         ),
-        import_react6.default.createElement(import_dsh_client_ui_primitives5.Button, { size: "md", variant: "outline", onClick: () => void c.refresh() }, t("refresh"))
+        import_react7.default.createElement(import_dsh_client_ui_primitives5.Button, { size: "md", variant: "outline", onClick: () => void c.refresh() }, t("refresh"))
       )
     ),
-    import_react6.default.createElement("p", { className: "ss-note" }, t("startProductHint"))
+    import_react7.default.createElement("p", { className: "ss-note" }, t("startProductHint"))
   );
 }
 function SetupPanel({ c, onConfigure }) {
   const { t, readiness, readiness: { rows }, show } = c;
   const first = firstBlockingFix(rows);
-  return import_react6.default.createElement(
-    import_react6.default.Fragment,
+  return import_react7.default.createElement(
+    import_react7.default.Fragment,
     null,
-    import_react6.default.createElement(
+    import_react7.default.createElement(
       "div",
       { className: "ss-run__headline" },
-      import_react6.default.createElement("h2", { className: "ss-run__title" }, t("setupTitle"))
+      import_react7.default.createElement("h2", { className: "ss-run__title" }, t("setupTitle"))
     ),
-    import_react6.default.createElement(
+    import_react7.default.createElement(
       Section,
       { title: t("checklistTitle") },
-      import_react6.default.createElement(ReadinessList, {
+      import_react7.default.createElement(ReadinessList, {
         rows,
         t,
         describe: (row) => describeRow(row, { host: c.host, catalog: c.catalog, settings: c.settings }, t),
@@ -2703,54 +2802,54 @@ function SetupPanel({ c, onConfigure }) {
         onFix: c.runFix,
         disabled: Boolean(c.busy.runtime)
       }),
-      !readiness.supported ? import_react6.default.createElement(InlineNote, null, t("readinessUnsupported")) : null
+      !readiness.supported ? import_react7.default.createElement(InlineNote, null, t("readinessUnsupported")) : null
     ),
-    import_react6.default.createElement(
+    import_react7.default.createElement(
       Section,
       { title: t("runConfigLabel") },
-      import_react6.default.createElement(ConfigSummary, { c })
+      import_react7.default.createElement(ConfigSummary, { c })
     ),
-    import_react6.default.createElement(PrimaryActionBar, {
+    import_react7.default.createElement(PrimaryActionBar, {
       c,
       onConfigure,
       secondary: first && first.fix.intent === "import_spec" ? [] : [
-        import_react6.default.createElement(
+        import_react7.default.createElement(
           import_dsh_client_ui_primitives5.Button,
           { key: "import", size: "md", variant: "ghost", onClick: () => c.setImportOpen(true) },
           t("importSpec")
         )
       ]
     }),
-    import_react6.default.createElement(NewSiteHelp, { t, show })
+    import_react7.default.createElement(NewSiteHelp, { t, show })
   );
 }
 function ReadyPanel({ c, onConfigure }) {
   const { t, readiness, readiness: { rows } } = c;
-  const [expanded, setExpanded] = import_react6.default.useState(false);
-  return import_react6.default.createElement(
-    import_react6.default.Fragment,
+  const [expanded, setExpanded] = import_react7.default.useState(false);
+  return import_react7.default.createElement(
+    import_react7.default.Fragment,
     null,
-    import_react6.default.createElement(
+    import_react7.default.createElement(
       "div",
       { className: "ss-summary-grid" },
-      import_react6.default.createElement(ConfigSummary, { c })
+      import_react7.default.createElement(ConfigSummary, { c })
     ),
-    import_react6.default.createElement(PrimaryActionBar, { c, onConfigure }),
-    import_react6.default.createElement(
+    import_react7.default.createElement(PrimaryActionBar, { c, onConfigure }),
+    import_react7.default.createElement(
       "details",
       {
         className: "ss-details",
         open: expanded,
         onToggle: (event) => setExpanded(event.currentTarget.open)
       },
-      import_react6.default.createElement(
+      import_react7.default.createElement(
         "summary",
         null,
         t("checklistTitle"),
         " \xB7 ",
         t("badgeReady")
       ),
-      import_react6.default.createElement(ReadinessList, {
+      import_react7.default.createElement(ReadinessList, {
         rows,
         t,
         describe: (row) => describeRow(row, { host: c.host, catalog: c.catalog, settings: c.settings }, t),
@@ -2758,8 +2857,8 @@ function ReadyPanel({ c, onConfigure }) {
         onFix: c.runFix
       })
     ),
-    !readiness.supported ? import_react6.default.createElement(InlineNote, null, t("readinessUnsupported")) : null,
-    c.state.host?.automation?.run ? import_react6.default.createElement("p", { className: "ss-note" }, t("runNoTotalHint")) : null
+    !readiness.supported ? import_react7.default.createElement(InlineNote, null, t("readinessUnsupported")) : null,
+    c.state.host?.automation?.run ? import_react7.default.createElement("p", { className: "ss-note" }, t("runNoTotalHint")) : null
   );
 }
 function SummaryPanel({ c, onConfigure }) {
@@ -2776,39 +2875,40 @@ function SummaryPanel({ c, onConfigure }) {
     run?.spec_path ? `${t("defaultSpec")}: ${safeBasename(run.spec_path)}` : "",
     run?.adapter ? `${t("defaultAdapter")}: ${run.adapter}` : ""
   ].filter(Boolean).join("\n");
-  return import_react6.default.createElement(
-    import_react6.default.Fragment,
+  return import_react7.default.createElement(
+    import_react7.default.Fragment,
     null,
-    import_react6.default.createElement(
+    import_react7.default.createElement(
       "div",
       { className: "ss-surface" },
-      import_react6.default.createElement(
+      import_react7.default.createElement(
         "h2",
         { className: "ss-run__title" },
         completed ? t("summaryTitleCompleted") : t("summaryTitleEnded")
       ),
-      import_react6.default.createElement("p", { className: "ss-run__description" }, t("summaryDescription")),
-      import_react6.default.createElement(
+      import_react7.default.createElement("p", { className: "ss-run__description" }, t("summaryDescription")),
+      import_react7.default.createElement(
         "div",
         { className: "ss-metrics" },
-        import_react6.default.createElement(Metric, { value: `${metrics.completed}`, label: t("runCompleted") }),
-        import_react6.default.createElement(Metric, { value: `${metrics.warnings}`, label: t("runWarnings") }),
-        import_react6.default.createElement(Metric, { value: formatDuration(metrics.elapsed), label: t("runElapsed") }),
-        import_react6.default.createElement(Metric, {
+        import_react7.default.createElement(Metric, { value: `${metrics.completed}`, label: t("runCompleted") }),
+        import_react7.default.createElement(Metric, { value: `${metrics.warnings}`, label: t("runWarnings") }),
+        import_react7.default.createElement(Metric, { value: formatDuration(metrics.elapsed), label: t("runElapsed") }),
+        import_react7.default.createElement(Metric, {
           value: metrics.average ? formatDuration(metrics.average) : "\u2014",
           label: t("runAverage")
         })
       ),
-      import_react6.default.createElement(
+      import_react7.default.createElement(
         "p",
         { className: "ss-note" },
         last && typeof last.suggested_score === "number" ? `${t("summaryLastScore", { score: last.suggested_score })}${typeof last.confidence === "number" ? ` \xB7 ${t("summaryLastConfidence", { value: last.confidence.toFixed(2) })}` : ""}` : t("summaryNoRecord")
-      )
+      ),
+      import_react7.default.createElement(AutomationDiagnostics, { t, run })
     ),
-    import_react6.default.createElement(
+    import_react7.default.createElement(
       "div",
       { className: "ss-actions" },
-      import_react6.default.createElement(
+      import_react7.default.createElement(
         import_dsh_client_ui_primitives5.Button,
         {
           className: "ss-btn--hero",
@@ -2819,7 +2919,7 @@ function SummaryPanel({ c, onConfigure }) {
         },
         t("startNewRound")
       ),
-      import_react6.default.createElement(
+      import_react7.default.createElement(
         import_dsh_client_ui_primitives5.Button,
         {
           size: "md",
@@ -2828,22 +2928,22 @@ function SummaryPanel({ c, onConfigure }) {
         },
         t("summaryCopy")
       ),
-      import_react6.default.createElement(import_dsh_client_ui_primitives5.Button, { size: "md", variant: "ghost", onClick: onConfigure }, t("configure")),
-      import_react6.default.createElement(import_dsh_client_ui_primitives5.Button, { size: "md", variant: "ghost", onClick: () => void c.refresh() }, t("refresh"))
+      import_react7.default.createElement(import_dsh_client_ui_primitives5.Button, { size: "md", variant: "ghost", onClick: onConfigure }, t("configure")),
+      import_react7.default.createElement(import_dsh_client_ui_primitives5.Button, { size: "md", variant: "ghost", onClick: () => void c.refresh() }, t("refresh"))
     )
   );
 }
 function Metric({ value, label }) {
-  return import_react6.default.createElement(
+  return import_react7.default.createElement(
     "div",
     { className: "ss-metric" },
-    import_react6.default.createElement("span", { className: "ss-metric__value" }, value),
-    import_react6.default.createElement("span", { className: "ss-metric__label" }, label)
+    import_react7.default.createElement("span", { className: "ss-metric__value" }, value),
+    import_react7.default.createElement("span", { className: "ss-metric__label" }, label)
   );
 }
 
 // src/client/components/RunPanel.jsx
-var import_react7 = __toESM(require("react"), 1);
+var import_react8 = __toESM(require("react"), 1);
 var import_dsh_client_ui_primitives6 = require("@deepseek-ai/dsh-client-ui-primitives");
 var TITLE_KEY = {
   starting: "startingTitle",
@@ -2863,33 +2963,33 @@ var DESCRIPTION_KEY = {
 };
 function PaperTrail({ c }) {
   const { t, runView, run } = c;
-  return import_react7.default.createElement(
+  return import_react8.default.createElement(
     "div",
     { className: "ss-form__row", style: { gap: 6 } },
-    import_react7.default.createElement(
+    import_react8.default.createElement(
       "div",
       { className: "ss-run__strip-label" },
-      import_react7.default.createElement("span", null, t("runProgressLabel")),
-      import_react7.default.createElement(
+      import_react8.default.createElement("span", null, t("runProgressLabel")),
+      import_react8.default.createElement(
         "span",
         { className: "ss-tabular" },
         runView.paper ? t("runCurrentPaper", { n: runView.paper }) : ""
       )
     ),
-    import_react7.default.createElement(
+    import_react8.default.createElement(
       "div",
       { className: "ss-trail", role: "img", "aria-label": t("runProgressLabel") },
       ...runView.trail.map(
-        (segment) => segment.state === "overflow" ? import_react7.default.createElement(
+        (segment) => segment.state === "overflow" ? import_react8.default.createElement(
           "span",
           { key: segment.key, className: "ss-trail__paper ss-trail__paper--overflow" },
           `+${segment.count}`
-        ) : import_react7.default.createElement("span", {
+        ) : import_react8.default.createElement("span", {
           key: segment.key,
           className: `ss-trail__paper${segment.state === "active" ? " ss-trail__paper--active" : ""}`
         })
       ),
-      runView.trail.length === 0 ? import_react7.default.createElement("span", { className: "ss-trail__empty" }, t("runNoTotalHint")) : null
+      runView.trail.length === 0 ? import_react8.default.createElement("span", { className: "ss-trail__empty" }, t("runNoTotalHint")) : null
     )
   );
 }
@@ -2901,47 +3001,47 @@ function RunConfigLine({ c }) {
     [t("runAdapterLabel"), adapterLabel || "\u2014"],
     [t("runSubmitLabel"), t(settings.submitMode === "manual_confirm" ? "manualConfirm" : "autoSubmit")]
   ];
-  return import_react7.default.createElement(
+  return import_react8.default.createElement(
     "div",
     { className: "ss-run__config" },
     ...items.map(
-      ([label, value]) => import_react7.default.createElement(
+      ([label, value]) => import_react8.default.createElement(
         "span",
         { key: label, className: "ss-run__config-item" },
-        import_react7.default.createElement("span", null, label),
-        import_react7.default.createElement("span", { className: "ss-run__config-value", title: value }, value)
+        import_react8.default.createElement("span", null, label),
+        import_react8.default.createElement("span", { className: "ss-run__config-value", title: value }, value)
       )
     )
   );
 }
 function AwaitingBody({ c, pending }) {
   const { t } = c;
-  return import_react7.default.createElement(
-    import_react7.default.Fragment,
+  return import_react8.default.createElement(
+    import_react8.default.Fragment,
     null,
-    import_react7.default.createElement(
+    import_react8.default.createElement(
       "div",
       { className: "ss-inline-facts" },
-      pending?.score != null ? import_react7.default.createElement("span", null, t("awaitingSuggested", { score: String(pending.score) })) : null,
-      pending?.confidence != null ? import_react7.default.createElement("span", null, t("awaitingConfidence", { value: pending.confidence.toFixed(2) })) : null
+      pending?.score != null ? import_react8.default.createElement("span", null, t("awaitingSuggested", { score: String(pending.score) })) : null,
+      pending?.confidence != null ? import_react8.default.createElement("span", null, t("awaitingConfidence", { value: pending.confidence.toFixed(2) })) : null
     ),
-    import_react7.default.createElement(
+    import_react8.default.createElement(
       "div",
       { className: "ss-flags" },
       ...pending?.flags?.length ? pending.flags.map(
-        (flag, index) => import_react7.default.createElement(
+        (flag, index) => import_react8.default.createElement(
           "span",
           { key: `${index}-${flag.code || flag.message}`, className: "ss-flag" },
-          import_react7.default.createElement(import_dsh_client_ui_primitives6.StateDot, { state: flag.severity === "info" ? "ongoing" : "warning", size: 8 }),
+          import_react8.default.createElement(import_dsh_client_ui_primitives6.StateDot, { state: flag.severity === "info" ? "ongoing" : "warning", size: 8 }),
           flag.message
         )
-      ) : [import_react7.default.createElement("span", { key: "none", className: "ss-note" }, t("awaitingNoFlags"))]
+      ) : [import_react8.default.createElement("span", { key: "none", className: "ss-note" }, t("awaitingNoFlags"))]
     ),
-    pending?.ocrText ? import_react7.default.createElement(
+    pending?.ocrText ? import_react8.default.createElement(
       "details",
       { className: "ss-details" },
-      import_react7.default.createElement("summary", null, t("awaitingOcr")),
-      import_react7.default.createElement("pre", { className: "ss-ocr" }, pending.ocrText)
+      import_react8.default.createElement("summary", null, t("awaitingOcr")),
+      import_react8.default.createElement("pre", { className: "ss-ocr" }, pending.ocrText)
     ) : null
   );
 }
@@ -2953,59 +3053,60 @@ function RunPanel({ c }) {
   const description = t(DESCRIPTION_KEY[phase] ?? "gradingDescription");
   const isAwaiting = phase === "awaiting";
   const canEnd = ["running", "pausing", "paused", "error", "starting"].includes(phase);
-  return import_react7.default.createElement(
-    import_react7.default.Fragment,
+  return import_react8.default.createElement(
+    import_react8.default.Fragment,
     null,
-    import_react7.default.createElement(
+    import_react8.default.createElement(
       "div",
       { className: `ss-run${phase === "error" ? " ss-surface--error" : ""}` },
-      import_react7.default.createElement(
+      import_react8.default.createElement(
         "div",
         { className: "ss-run__headline" },
-        import_react7.default.createElement(
+        import_react8.default.createElement(
           "h2",
           { className: "ss-run__title" },
           isAwaiting ? [
-            import_react7.default.createElement(import_dsh_client_ui_primitives6.StateDot, { key: "dot", state: "warning", size: 10 }),
+            import_react8.default.createElement(import_dsh_client_ui_primitives6.StateDot, { key: "dot", state: "warning", size: 10 }),
             " ",
             title
           ] : title
         ),
-        import_react7.default.createElement("p", { className: "ss-run__description" }, description)
+        import_react8.default.createElement("p", { className: "ss-run__description" }, description)
       ),
-      isAwaiting ? import_react7.default.createElement(AwaitingBody, { c, pending }) : import_react7.default.createElement(
-        import_react7.default.Fragment,
+      isAwaiting ? import_react8.default.createElement(AwaitingBody, { c, pending }) : import_react8.default.createElement(
+        import_react8.default.Fragment,
         null,
-        import_react7.default.createElement(PaperTrail, { c }),
-        import_react7.default.createElement(
+        import_react8.default.createElement(PaperTrail, { c }),
+        import_react8.default.createElement(
           "div",
           { className: "ss-metrics" },
-          import_react7.default.createElement(Metric, { value: `${runView.metrics.completed}`, label: t("runCompleted") }),
-          import_react7.default.createElement(Metric, { value: `${runView.metrics.warnings}`, label: t("runWarnings") }),
-          import_react7.default.createElement(Metric, { value: formatDuration(runView.metrics.elapsed), label: t("runElapsed") }),
-          import_react7.default.createElement(Metric, {
+          import_react8.default.createElement(Metric, { value: `${runView.metrics.completed}`, label: t("runCompleted") }),
+          import_react8.default.createElement(Metric, { value: `${runView.metrics.warnings}`, label: t("runWarnings") }),
+          import_react8.default.createElement(Metric, { value: formatDuration(runView.metrics.elapsed), label: t("runElapsed") }),
+          import_react8.default.createElement(Metric, {
             value: runView.metrics.paused > 0 ? formatDuration(runView.metrics.paused) : "\u2014",
             label: t("runPaused")
           }),
-          import_react7.default.createElement(Metric, {
+          import_react8.default.createElement(Metric, {
             value: runView.metrics.average ? formatDuration(runView.metrics.average) : "\u2014",
             label: t("runAverage")
           })
         ),
-        import_react7.default.createElement(RunConfigLine, { c }),
-        phase === "pausing" ? import_react7.default.createElement(InlineNote, null, t("pausingDescription")) : null,
-        phase === "error" && run?.error_message ? import_react7.default.createElement(InlineNote, { tone: "error" }, run.error_message) : null,
-        run?.pause_reason && phase !== "running" && phase !== "starting" ? import_react7.default.createElement(
+        import_react8.default.createElement(RunConfigLine, { c }),
+        import_react8.default.createElement(AutomationDiagnostics, { t, run }),
+        phase === "pausing" ? import_react8.default.createElement(InlineNote, null, t("pausingDescription")) : null,
+        phase === "error" && run?.error_message && !run?.last_error ? import_react8.default.createElement(InlineNote, { tone: "error" }, run.error_message) : null,
+        run?.pause_reason && phase !== "running" && phase !== "starting" ? import_react8.default.createElement(
           "p",
           { className: "ss-note" },
           `${t("runStageLabel")}: ${runStageLabel(run, t)}`
         ) : null
       )
     ),
-    import_react7.default.createElement(
+    import_react8.default.createElement(
       "div",
       { className: "ss-actionbar" },
-      import_react7.default.createElement(
+      import_react8.default.createElement(
         import_dsh_client_ui_primitives6.Button,
         {
           className: "ss-btn--block",
@@ -3016,50 +3117,50 @@ function RunPanel({ c }) {
         },
         c.primaryAction.label
       ),
-      isAwaiting ? import_react7.default.createElement(
+      isAwaiting ? import_react8.default.createElement(
         import_dsh_client_ui_primitives6.Button,
         { size: "md", variant: "outline", disabled: Boolean(busy.control), onClick: () => void c.doManual("retry") },
         t("reidentify")
       ) : null,
-      isAwaiting ? import_react7.default.createElement(
+      isAwaiting ? import_react8.default.createElement(
         import_dsh_client_ui_primitives6.Button,
         { size: "md", variant: "ghost", disabled: Boolean(busy.control), onClick: () => void c.pause() },
         t("pauseFirst")
       ) : null,
-      canEnd ? import_react7.default.createElement(
+      canEnd ? import_react8.default.createElement(
         import_dsh_client_ui_primitives6.Button,
         { size: "md", variant: "ghost", disabled: Boolean(busy.control), onClick: () => c.endGrading() },
         t("endGrading")
       ) : null,
-      !isAwaiting ? import_react7.default.createElement(import_dsh_client_ui_primitives6.Button, { size: "md", variant: "ghost", onClick: () => c.setConfigOpen(true) }, t("configure")) : null
+      !isAwaiting ? import_react8.default.createElement(import_dsh_client_ui_primitives6.Button, { size: "md", variant: "ghost", onClick: () => c.setConfigOpen(true) }, t("configure")) : null
     )
   );
 }
 
 // src/client/components/surfaces.jsx
-var import_react9 = __toESM(require("react"), 1);
+var import_react10 = __toESM(require("react"), 1);
 
 // src/client/components/ConfigSheet.jsx
-var import_react8 = __toESM(require("react"), 1);
+var import_react9 = __toESM(require("react"), 1);
 var import_dsh_client_ui_primitives7 = require("@deepseek-ai/dsh-client-ui-primitives");
 function ConfigSheet({ open, onClose, console: c }) {
   const { t, settings, catalog, busy, updateSetting, importFile, testModelForm, phase } = c;
   const locked = isRunActive(phase);
-  const [importing, setImporting] = import_react8.default.useState(false);
-  const [message, setMessage] = import_react8.default.useState("");
-  const [error, setError] = import_react8.default.useState("");
-  const [modelTest, setModelTest] = import_react8.default.useState({ state: "idle", ok: null, message: "" });
-  const [confidence, setConfidence] = import_react8.default.useState(settings.confidenceThreshold);
-  const committedConfidence = import_react8.default.useRef(settings.confidenceThreshold);
-  const confidenceTimer = import_react8.default.useRef(null);
-  const draggingConfidence = import_react8.default.useRef(false);
-  const fileRef = import_react8.default.useRef(null);
-  import_react8.default.useEffect(() => {
+  const [importing, setImporting] = import_react9.default.useState(false);
+  const [message, setMessage] = import_react9.default.useState("");
+  const [error, setError] = import_react9.default.useState("");
+  const [modelTest, setModelTest] = import_react9.default.useState({ state: "idle", ok: null, message: "" });
+  const [confidence, setConfidence] = import_react9.default.useState(settings.confidenceThreshold);
+  const committedConfidence = import_react9.default.useRef(settings.confidenceThreshold);
+  const confidenceTimer = import_react9.default.useRef(null);
+  const draggingConfidence = import_react9.default.useRef(false);
+  const fileRef = import_react9.default.useRef(null);
+  import_react9.default.useEffect(() => {
     if (draggingConfidence.current) return;
     setConfidence(settings.confidenceThreshold);
     committedConfidence.current = settings.confidenceThreshold;
   }, [settings.confidenceThreshold]);
-  import_react8.default.useEffect(
+  import_react9.default.useEffect(
     () => () => {
       if (confidenceTimer.current) clearTimeout(confidenceTimer.current);
     },
@@ -3080,7 +3181,7 @@ function ConfigSheet({ open, onClose, console: c }) {
       flushConfidence(value);
     }, 400);
   };
-  import_react8.default.useEffect(() => {
+  import_react9.default.useEffect(() => {
     if (!open) {
       setMessage("");
       setError("");
@@ -3138,7 +3239,7 @@ function ConfigSheet({ open, onClose, console: c }) {
       setModelTest({ state: "error", ok: false, message: cause instanceof Error ? cause.message : String(cause) });
     }
   };
-  return import_react8.default.createElement(
+  return import_react9.default.createElement(
     import_dsh_client_ui_primitives7.Modal,
     {
       open: true,
@@ -3146,25 +3247,25 @@ function ConfigSheet({ open, onClose, console: c }) {
       title: t("configTitle"),
       closeLabel: t("close"),
       className: "ss-modal",
-      footer: import_react8.default.createElement(
+      footer: import_react9.default.createElement(
         import_dsh_client_ui_primitives7.Button,
         { size: "sm", variant: "primary", onClick: onClose },
         t("configDone")
       )
     },
-    import_react8.default.createElement(
+    import_react9.default.createElement(
       "div",
       { className: "ss-sheet" },
-      import_react8.default.createElement("p", { className: "ss-form__hint" }, t("configDescription")),
-      locked ? import_react8.default.createElement(InlineNote, null, t("configLockedDuringRun")) : null,
-      import_react8.default.createElement(
+      import_react9.default.createElement("p", { className: "ss-form__hint" }, t("configDescription")),
+      locked ? import_react9.default.createElement(InlineNote, null, t("configLockedDuringRun")) : null,
+      import_react9.default.createElement(
         "div",
         { className: "ss-sheet__group" },
-        import_react8.default.createElement("h3", { className: "ss-sheet__title" }, t("specSelectLabel")),
-        import_react8.default.createElement(
+        import_react9.default.createElement("h3", { className: "ss-sheet__title" }, t("specSelectLabel")),
+        import_react9.default.createElement(
           "div",
           { className: "ss-select-wrap" },
-          import_react8.default.createElement(
+          import_react9.default.createElement(
             "select",
             {
               className: "ss-select",
@@ -3175,7 +3276,7 @@ function ConfigSheet({ open, onClose, console: c }) {
               onChange: (event) => void change({ defaultSpec: event.target.value })
             },
             ...specOptions.map(
-              (option, index) => import_react8.default.createElement(
+              (option, index) => import_react9.default.createElement(
                 "option",
                 { key: `spec-${index}`, value: option.value },
                 option.label
@@ -3183,33 +3284,33 @@ function ConfigSheet({ open, onClose, console: c }) {
             )
           )
         ),
-        import_react8.default.createElement(
+        import_react9.default.createElement(
           "div",
           { className: "ss-form__inline" },
-          import_react8.default.createElement(
+          import_react9.default.createElement(
             import_dsh_client_ui_primitives7.Button,
             { size: "sm", variant: "outline", onClick: () => fileRef.current?.click(), disabled: importing },
             importing ? t("importingSpec") : t("importSpec")
           ),
-          import_react8.default.createElement("input", {
+          import_react9.default.createElement("input", {
             ref: fileRef,
             type: "file",
             accept: ".md,text/markdown",
             hidden: true,
             onChange: handleImport
           }),
-          import_react8.default.createElement("span", { className: "ss-form__hint", style: { margin: 0 } }, t("importHint"))
+          import_react9.default.createElement("span", { className: "ss-form__hint", style: { margin: 0 } }, t("importHint"))
         ),
-        message ? import_react8.default.createElement(InlineNote, { tone: "success" }, message) : null
+        message ? import_react9.default.createElement(InlineNote, { tone: "success" }, message) : null
       ),
-      import_react8.default.createElement(
+      import_react9.default.createElement(
         "div",
         { className: "ss-sheet__group" },
-        import_react8.default.createElement("h3", { className: "ss-sheet__title" }, t("adapterSelectLabel")),
-        import_react8.default.createElement(
+        import_react9.default.createElement("h3", { className: "ss-sheet__title" }, t("adapterSelectLabel")),
+        import_react9.default.createElement(
           "div",
           { className: "ss-select-wrap" },
-          import_react8.default.createElement(
+          import_react9.default.createElement(
             "select",
             {
               className: "ss-select",
@@ -3219,7 +3320,7 @@ function ConfigSheet({ open, onClose, console: c }) {
               onChange: (event) => void change({ adapter: event.target.value })
             },
             ...adapterOptions.map(
-              (option, index) => import_react8.default.createElement(
+              (option, index) => import_react9.default.createElement(
                 "option",
                 { key: `adapter-${index}`, value: option.value },
                 option.label
@@ -3227,13 +3328,13 @@ function ConfigSheet({ open, onClose, console: c }) {
             )
           )
         ),
-        adapters.length === 0 ? import_react8.default.createElement("p", { className: "ss-form__hint" }, t("adapterEmpty")) : null
+        adapters.length === 0 ? import_react9.default.createElement("p", { className: "ss-form__hint" }, t("adapterEmpty")) : null
       ),
-      import_react8.default.createElement(
+      import_react9.default.createElement(
         "div",
         { className: "ss-sheet__group" },
-        import_react8.default.createElement("h3", { className: "ss-sheet__title" }, t("submitModeLabel")),
-        import_react8.default.createElement(import_dsh_client_ui_primitives7.SegmentedControl, {
+        import_react9.default.createElement("h3", { className: "ss-sheet__title" }, t("submitModeLabel")),
+        import_react9.default.createElement(import_dsh_client_ui_primitives7.SegmentedControl, {
           id: "suhuang-submit-mode",
           label: t("submitModeLabel"),
           value: settings.submitMode,
@@ -3244,26 +3345,26 @@ function ConfigSheet({ open, onClose, console: c }) {
           ],
           onChange: (value) => void change({ submitMode: value })
         }),
-        import_react8.default.createElement(
+        import_react9.default.createElement(
           "p",
           { className: "ss-form__hint" },
           settings.submitMode === "manual_confirm" ? t("manualConfirmHint") : t("autoSubmitHint")
         )
       ),
-      import_react8.default.createElement(
+      import_react9.default.createElement(
         "div",
         { className: "ss-sheet__group" },
-        import_react8.default.createElement(
+        import_react9.default.createElement(
           "div",
           { className: "ss-switch-row" },
-          import_react8.default.createElement("h3", { className: "ss-sheet__title" }, t("confidenceLabel")),
-          import_react8.default.createElement(
+          import_react9.default.createElement("h3", { className: "ss-sheet__title" }, t("confidenceLabel")),
+          import_react9.default.createElement(
             "span",
             { className: "ss-tabular", style: { fontSize: 14 } },
             Number(confidence).toFixed(2)
           )
         ),
-        import_react8.default.createElement("input", {
+        import_react9.default.createElement("input", {
           className: "ss-range",
           type: "range",
           min: 0,
@@ -3286,21 +3387,21 @@ function ConfigSheet({ open, onClose, console: c }) {
             flushConfidence(confidence);
           }
         }),
-        import_react8.default.createElement("p", { className: "ss-form__hint" }, t("confidenceHint"))
+        import_react9.default.createElement("p", { className: "ss-form__hint" }, t("confidenceHint"))
       ),
-      import_react8.default.createElement(
+      import_react9.default.createElement(
         "div",
         { className: "ss-sheet__group" },
-        import_react8.default.createElement("h3", { className: "ss-sheet__title" }, t("configModelReadonly")),
-        import_react8.default.createElement(
+        import_react9.default.createElement("h3", { className: "ss-sheet__title" }, t("configModelReadonly")),
+        import_react9.default.createElement(
           "p",
           { className: "ss-form__hint" },
           catalog.provider?.api_key_configured ? t("configModelEditInSettings") : t("modelDetailNoKey")
         ),
-        import_react8.default.createElement(
+        import_react9.default.createElement(
           "div",
           { className: "ss-form__inline" },
-          import_react8.default.createElement(
+          import_react9.default.createElement(
             import_dsh_client_ui_primitives7.Button,
             {
               size: "sm",
@@ -3310,46 +3411,46 @@ function ConfigSheet({ open, onClose, console: c }) {
             },
             modelTest.state === "loading" ? t("testing") : t("testConnection")
           ),
-          modelTest.state === "ready" && modelTest.ok ? import_react8.default.createElement(
+          modelTest.state === "ready" && modelTest.ok ? import_react9.default.createElement(
             "span",
             { className: "ss-status", "data-tone": "success" },
-            import_react8.default.createElement(import_dsh_client_ui_primitives7.StateDot, { state: "done", size: 8 }),
+            import_react9.default.createElement(import_dsh_client_ui_primitives7.StateDot, { state: "done", size: 8 }),
             t("testSuccess")
           ) : null
         ),
-        modelTest.state === "ready" && !modelTest.ok ? import_react8.default.createElement(InlineNote, { tone: "error" }, t("testFailed", { error: modelTest.message })) : modelTest.state === "error" ? import_react8.default.createElement(InlineNote, { tone: "error" }, t("testFailed", { error: modelTest.message })) : null
+        modelTest.state === "ready" && !modelTest.ok ? import_react9.default.createElement(InlineNote, { tone: "error" }, t("testFailed", { error: modelTest.message })) : modelTest.state === "error" ? import_react9.default.createElement(InlineNote, { tone: "error" }, t("testFailed", { error: modelTest.message })) : null
       ),
-      error ? import_react8.default.createElement(InlineNote, { tone: "error" }, error) : null,
-      import_react8.default.createElement("p", { className: "ss-form__hint" }, t("autoSaveHint"))
+      error ? import_react9.default.createElement(InlineNote, { tone: "error" }, error) : null,
+      import_react9.default.createElement("p", { className: "ss-form__hint" }, t("autoSaveHint"))
     )
   );
 }
 
 // src/client/components/surfaces.jsx
 function ConsoleSurfaces({ c, withConfigSheet = true }) {
-  return import_react9.default.createElement(
+  return import_react10.default.createElement(
     "div",
     { className: "ss-surfaces", "data-testid": "suhuang-scroll-surfaces" },
-    import_react9.default.createElement(NoticeBar, { notice: c.notice }),
-    withConfigSheet ? import_react9.default.createElement(ConfigSheet, {
+    import_react10.default.createElement(NoticeBar, { notice: c.notice }),
+    withConfigSheet ? import_react10.default.createElement(ConfigSheet, {
       open: c.configOpen,
       onClose: () => c.setConfigOpen(false),
       console: c
     }) : null,
-    import_react9.default.createElement(ImportSpecDialog, {
+    import_react10.default.createElement(ImportSpecDialog, {
       open: c.importOpen,
       onClose: () => c.setImportOpen(false),
       onImport: c.importFile,
       t: c.t,
       busy: Boolean(c.busy.import)
     }),
-    import_react9.default.createElement(GuidanceModal, {
+    import_react10.default.createElement(GuidanceModal, {
       dialog: c.dialog,
       onClose: () => c.setDialog(null),
       t: c.t,
       show: c.show
     }),
-    import_react9.default.createElement(ConfirmModal, { confirm: c.confirm, onClose: c.closeConfirm, t: c.t })
+    import_react10.default.createElement(ConfirmModal, { confirm: c.confirm, onClose: c.closeConfirm, t: c.t })
   );
 }
 
@@ -3366,60 +3467,60 @@ function ConsolePage({ locale, variant = "main", onOpenRightTab }) {
   const compact = variant === "compact";
   const onConfigure = () => c.setConfigOpen(true);
   let body;
-  if (c.phase === "offline") body = import_react10.default.createElement(OfflinePanel, { c, onConfigure });
-  else if (c.phase === "setup") body = import_react10.default.createElement(SetupPanel, { c, onConfigure });
-  else if (c.phase === "ready") body = import_react10.default.createElement(ReadyPanel, { c, onConfigure });
+  if (c.phase === "offline") body = import_react11.default.createElement(OfflinePanel, { c, onConfigure });
+  else if (c.phase === "setup") body = import_react11.default.createElement(SetupPanel, { c, onConfigure });
+  else if (c.phase === "ready") body = import_react11.default.createElement(ReadyPanel, { c, onConfigure });
   else if (c.phase === "completed" || c.phase === "ended") {
-    body = import_react10.default.createElement(SummaryPanel, { c, onConfigure });
-  } else body = import_react10.default.createElement(RunPanel, { c });
-  return import_react10.default.createElement(
+    body = import_react11.default.createElement(SummaryPanel, { c, onConfigure });
+  } else body = import_react11.default.createElement(RunPanel, { c });
+  return import_react11.default.createElement(
     "div",
     {
       className: `ss-console${compact ? " ss-console--compact" : " ss-console--framed"}`,
       "data-testid": compact ? "suhuang-scroll-console-compact" : "suhuang-scroll-console",
       "data-phase": c.phase
     },
-    import_react10.default.createElement(
+    import_react11.default.createElement(
       "div",
       { className: "ss-console__inner" },
-      import_react10.default.createElement(
+      import_react11.default.createElement(
         "header",
         { className: "ss-head" },
-        import_react10.default.createElement(
+        import_react11.default.createElement(
           "div",
           { className: "ss-head__text" },
-          import_react10.default.createElement("h1", { className: "ss-head__title" }, c.t("title")),
-          import_react10.default.createElement("p", { className: "ss-head__subtitle" }, import_react10.default.createElement(Subtitle, { c }))
+          import_react11.default.createElement("h1", { className: "ss-head__title" }, c.t("title")),
+          import_react11.default.createElement("p", { className: "ss-head__subtitle" }, import_react11.default.createElement(Subtitle, { c }))
         ),
-        import_react10.default.createElement(
+        import_react11.default.createElement(
           "div",
           { className: "ss-head__actions" },
-          import_react10.default.createElement(StatusPill, { phase: c.state.loading && !c.state.host ? "loading" : c.phase, t: c.t }),
-          import_react10.default.createElement(
+          import_react11.default.createElement(StatusPill, { phase: c.state.loading && !c.state.host ? "loading" : c.phase, t: c.t }),
+          import_react11.default.createElement(
             import_dsh_client_ui_primitives8.Button,
             {
               size: "sm",
               variant: "ghost",
-              icon: import_react10.default.createElement(import_dsh_client_ui_primitives8.IconRefreshOutlineRegular, { size: 14 }),
+              icon: import_react11.default.createElement(import_dsh_client_ui_primitives8.IconRefreshOutlineRegular, { size: 14 }),
               "aria-label": c.t("refresh"),
               title: c.t("refresh"),
               onClick: () => void c.refresh()
             },
             null
           ),
-          import_react10.default.createElement(
+          import_react11.default.createElement(
             import_dsh_client_ui_primitives8.Button,
             {
               size: "sm",
               variant: "ghost",
-              icon: import_react10.default.createElement(import_dsh_client_ui_primitives8.IconSlidersTwoOutlineRegular, { size: 14 }),
+              icon: import_react11.default.createElement(import_dsh_client_ui_primitives8.IconSlidersTwoOutlineRegular, { size: 14 }),
               "aria-label": c.t("configure"),
               title: c.t("configure"),
               onClick: onConfigure
             },
             null
           ),
-          !compact && onOpenRightTab ? import_react10.default.createElement(
+          !compact && onOpenRightTab ? import_react11.default.createElement(
             import_dsh_client_ui_primitives8.Button,
             {
               size: "sm",
@@ -3436,16 +3537,16 @@ function ConsolePage({ locale, variant = "main", onOpenRightTab }) {
           ) : null
         )
       ),
-      c.connection === "reconnecting" ? import_react10.default.createElement(InlineNote, null, c.t("reconnectingDescription")) : null,
+      c.connection === "reconnecting" ? import_react11.default.createElement(InlineNote, null, c.t("reconnectingDescription")) : null,
       body,
-      import_react10.default.createElement(ConnectionDetails, { c })
+      import_react11.default.createElement(ConnectionDetails, { c })
     ),
-    import_react10.default.createElement(ConsoleSurfaces, { c })
+    import_react11.default.createElement(ConsoleSurfaces, { c })
   );
 }
 
 // src/client/components/SettingsSection.jsx
-var import_react11 = __toESM(require("react"), 1);
+var import_react12 = __toESM(require("react"), 1);
 var import_dsh_client_ui_primitives9 = require("@deepseek-ai/dsh-client-ui-primitives");
 function ModelForm({ c, sectionRef }) {
   const { t, catalog, settings } = c;
@@ -3456,11 +3557,11 @@ function ModelForm({ c, sectionRef }) {
     base_url: provider.base_url ?? "",
     api_key: ""
   });
-  const [draft, setDraft] = import_react11.default.useState(initial);
-  const [test, setTest] = import_react11.default.useState({ state: "idle", ok: null, message: "", legacy: false });
-  const [save, setSave] = import_react11.default.useState({ state: "idle", message: "" });
-  const dirty = import_react11.default.useRef(false);
-  import_react11.default.useEffect(() => {
+  const [draft, setDraft] = import_react12.default.useState(initial);
+  const [test, setTest] = import_react12.default.useState({ state: "idle", ok: null, message: "", legacy: false });
+  const [save, setSave] = import_react12.default.useState({ state: "idle", message: "" });
+  const dirty = import_react12.default.useRef(false);
+  import_react12.default.useEffect(() => {
     if (dirty.current) return;
     setDraft({
       provider: settings.provider || provider.provider || "",
@@ -3529,22 +3630,22 @@ function ModelForm({ c, sectionRef }) {
       });
     }
   };
-  return import_react11.default.createElement(
+  return import_react12.default.createElement(
     "div",
     { className: "ss-settings__group", ref: sectionRef },
-    import_react11.default.createElement("h2", { className: "ss-settings__group-title" }, t("settingsModelTitle")),
-    import_react11.default.createElement("p", { className: "ss-settings__group-hint" }, t("settingsModelHint")),
-    import_react11.default.createElement(
+    import_react12.default.createElement("h2", { className: "ss-settings__group-title" }, t("settingsModelTitle")),
+    import_react12.default.createElement("p", { className: "ss-settings__group-hint" }, t("settingsModelHint")),
+    import_react12.default.createElement(
       "div",
       { className: "ss-form" },
-      import_react11.default.createElement(
+      import_react12.default.createElement(
         "div",
         { className: "ss-form__row" },
-        import_react11.default.createElement("label", { className: "ss-form__label", htmlFor: "suhuang-model-provider" }, t("providerLabel")),
-        import_react11.default.createElement(
+        import_react12.default.createElement("label", { className: "ss-form__label", htmlFor: "suhuang-model-provider" }, t("providerLabel")),
+        import_react12.default.createElement(
           "div",
           { className: "ss-select-wrap" },
-          import_react11.default.createElement(
+          import_react12.default.createElement(
             "select",
             {
               id: "suhuang-model-provider",
@@ -3553,29 +3654,29 @@ function ModelForm({ c, sectionRef }) {
               onChange: (event) => update("provider", event.target.value)
             },
             ...providerOptions.map(
-              (option, index) => import_react11.default.createElement("option", { key: `provider-${index}`, value: option.value }, option.label)
+              (option, index) => import_react12.default.createElement("option", { key: `provider-${index}`, value: option.value }, option.label)
             )
           )
         )
       ),
-      import_react11.default.createElement(
+      import_react12.default.createElement(
         "div",
         { className: "ss-form__row" },
-        import_react11.default.createElement("label", { className: "ss-form__label", htmlFor: "suhuang-model-id" }, t("modelLabel")),
-        import_react11.default.createElement("input", {
+        import_react12.default.createElement("label", { className: "ss-form__label", htmlFor: "suhuang-model-id" }, t("modelLabel")),
+        import_react12.default.createElement("input", {
           id: "suhuang-model-id",
           className: "ss-input",
           value: draft.model,
           onChange: (event) => update("model", event.target.value),
           spellCheck: false
         }),
-        import_react11.default.createElement("p", { className: "ss-form__hint" }, t("modelHint"))
+        import_react12.default.createElement("p", { className: "ss-form__hint" }, t("modelHint"))
       ),
-      import_react11.default.createElement(
+      import_react12.default.createElement(
         "div",
         { className: "ss-form__row" },
-        import_react11.default.createElement("label", { className: "ss-form__label", htmlFor: "suhuang-model-base-url" }, t("baseUrlLabel")),
-        import_react11.default.createElement("input", {
+        import_react12.default.createElement("label", { className: "ss-form__label", htmlFor: "suhuang-model-base-url" }, t("baseUrlLabel")),
+        import_react12.default.createElement("input", {
           id: "suhuang-model-base-url",
           className: "ss-input",
           value: draft.base_url,
@@ -3583,13 +3684,13 @@ function ModelForm({ c, sectionRef }) {
           onChange: (event) => update("base_url", event.target.value),
           spellCheck: false
         }),
-        import_react11.default.createElement("p", { className: "ss-form__hint" }, t("baseUrlHint"))
+        import_react12.default.createElement("p", { className: "ss-form__hint" }, t("baseUrlHint"))
       ),
-      import_react11.default.createElement(
+      import_react12.default.createElement(
         "div",
         { className: "ss-form__row" },
-        import_react11.default.createElement("label", { className: "ss-form__label", htmlFor: "suhuang-model-api-key" }, t("apiKeyLabel")),
-        import_react11.default.createElement("input", {
+        import_react12.default.createElement("label", { className: "ss-form__label", htmlFor: "suhuang-model-api-key" }, t("apiKeyLabel")),
+        import_react12.default.createElement("input", {
           id: "suhuang-model-api-key",
           className: "ss-input",
           type: "password",
@@ -3598,7 +3699,7 @@ function ModelForm({ c, sectionRef }) {
           value: draft.api_key,
           onChange: (event) => update("api_key", event.target.value)
         }),
-        import_react11.default.createElement(
+        import_react12.default.createElement(
           "p",
           { className: "ss-form__hint" },
           provider.api_key_configured ? t("apiKeyConfigured") : t("apiKeyMissing"),
@@ -3606,38 +3707,38 @@ function ModelForm({ c, sectionRef }) {
           t("apiKeyHint")
         )
       ),
-      import_react11.default.createElement(
+      import_react12.default.createElement(
         "div",
         { className: "ss-form__inline" },
-        import_react11.default.createElement(
+        import_react12.default.createElement(
           import_dsh_client_ui_primitives9.Button,
           { size: "sm", variant: "outline", disabled: test.state === "loading", onClick: () => void runTest() },
           test.state === "loading" ? t("testing") : t("testConnection")
         ),
-        import_react11.default.createElement(
+        import_react12.default.createElement(
           import_dsh_client_ui_primitives9.Button,
           { size: "sm", variant: "primary", disabled: save.state === "loading", onClick: () => void saveModel2() },
           t("saveModel")
         ),
-        test.state === "ready" && test.ok ? import_react11.default.createElement(
+        test.state === "ready" && test.ok ? import_react12.default.createElement(
           "span",
           { className: "ss-status", "data-tone": "success" },
-          import_react11.default.createElement(import_dsh_client_ui_primitives9.StateDot, { state: "done", size: 8 }),
+          import_react12.default.createElement(import_dsh_client_ui_primitives9.StateDot, { state: "done", size: 8 }),
           t("testSuccess")
         ) : null
       ),
-      test.state === "ready" && !test.ok ? import_react11.default.createElement(InlineNote, { tone: "error" }, t("testFailed", { error: test.message })) : null,
-      test.state === "error" ? import_react11.default.createElement(InlineNote, { tone: "error" }, t("testFailed", { error: test.message })) : null,
-      save.state === "saved" ? import_react11.default.createElement(InlineNote, { tone: "success" }, save.message) : null,
-      save.state === "error" ? import_react11.default.createElement(InlineNote, { tone: "error" }, save.message) : null
+      test.state === "ready" && !test.ok ? import_react12.default.createElement(InlineNote, { tone: "error" }, t("testFailed", { error: test.message })) : null,
+      test.state === "error" ? import_react12.default.createElement(InlineNote, { tone: "error" }, t("testFailed", { error: test.message })) : null,
+      save.state === "saved" ? import_react12.default.createElement(InlineNote, { tone: "success" }, save.message) : null,
+      save.state === "error" ? import_react12.default.createElement(InlineNote, { tone: "error" }, save.message) : null
     )
   );
 }
 function ConnectionSection({ c }) {
   const { t, settings, host, runtimeRunning, runtimeManaged, busy } = c;
-  const [draft, setDraft] = import_react11.default.useState({ apiBaseUrl: settings.apiBaseUrl, backendDir: settings.backendDir });
-  const dirty = import_react11.default.useRef(false);
-  import_react11.default.useEffect(() => {
+  const [draft, setDraft] = import_react12.default.useState({ apiBaseUrl: settings.apiBaseUrl, backendDir: settings.backendDir });
+  const dirty = import_react12.default.useRef(false);
+  import_react12.default.useEffect(() => {
     if (dirty.current) return;
     setDraft({ apiBaseUrl: settings.apiBaseUrl, backendDir: settings.backendDir });
   }, [settings.apiBaseUrl, settings.backendDir]);
@@ -3645,41 +3746,41 @@ function ConnectionSection({ c }) {
     dirty.current = true;
     setDraft((current) => ({ ...current, [field]: value }));
   };
-  return import_react11.default.createElement(
+  return import_react12.default.createElement(
     "div",
     { className: "ss-settings__group" },
-    import_react11.default.createElement("h2", { className: "ss-settings__group-title" }, t("settingsConnectionTitle")),
-    import_react11.default.createElement("p", { className: "ss-settings__group-hint" }, t("settingsConnectionHint")),
-    import_react11.default.createElement(
+    import_react12.default.createElement("h2", { className: "ss-settings__group-title" }, t("settingsConnectionTitle")),
+    import_react12.default.createElement("p", { className: "ss-settings__group-hint" }, t("settingsConnectionHint")),
+    import_react12.default.createElement(
       "div",
       { className: "ss-summary-grid" },
-      import_react11.default.createElement(FieldRow, {
+      import_react12.default.createElement(FieldRow, {
         label: t("runtimeProcess"),
         value: `${runtimeRunning ? t("runtimeRunning") : t("runtimeStopped")} \xB7 ${runtimeManaged ? t("runtimeManaged") : t("runtimeExternal")}`
       }),
-      import_react11.default.createElement(FieldRow, { label: t("portLabel"), value: String(host?.port ?? "\u2014") })
+      import_react12.default.createElement(FieldRow, { label: t("portLabel"), value: String(host?.port ?? "\u2014") })
     ),
-    import_react11.default.createElement(
+    import_react12.default.createElement(
       "div",
       { className: "ss-form" },
-      import_react11.default.createElement(
+      import_react12.default.createElement(
         "div",
         { className: "ss-form__row" },
-        import_react11.default.createElement("label", { className: "ss-form__label", htmlFor: "suhuang-api-base-url" }, t("apiAddress")),
-        import_react11.default.createElement("input", {
+        import_react12.default.createElement("label", { className: "ss-form__label", htmlFor: "suhuang-api-base-url" }, t("apiAddress")),
+        import_react12.default.createElement("input", {
           id: "suhuang-api-base-url",
           className: "ss-input",
           value: draft.apiBaseUrl,
           onChange: (event) => update("apiBaseUrl", event.target.value),
           spellCheck: false
         }),
-        import_react11.default.createElement("p", { className: "ss-form__hint" }, t("apiAddressHint"))
+        import_react12.default.createElement("p", { className: "ss-form__hint" }, t("apiAddressHint"))
       ),
-      import_react11.default.createElement(
+      import_react12.default.createElement(
         "div",
         { className: "ss-form__row" },
-        import_react11.default.createElement("label", { className: "ss-form__label", htmlFor: "suhuang-backend-dir" }, t("backendDir")),
-        import_react11.default.createElement("input", {
+        import_react12.default.createElement("label", { className: "ss-form__label", htmlFor: "suhuang-backend-dir" }, t("backendDir")),
+        import_react12.default.createElement("input", {
           id: "suhuang-backend-dir",
           className: "ss-input",
           value: draft.backendDir,
@@ -3687,12 +3788,12 @@ function ConnectionSection({ c }) {
           onChange: (event) => update("backendDir", event.target.value),
           spellCheck: false
         }),
-        import_react11.default.createElement("p", { className: "ss-form__hint" }, t("backendDirHint"))
+        import_react12.default.createElement("p", { className: "ss-form__hint" }, t("backendDirHint"))
       ),
-      import_react11.default.createElement(
+      import_react12.default.createElement(
         "div",
         { className: "ss-actions" },
-        import_react11.default.createElement(
+        import_react12.default.createElement(
           import_dsh_client_ui_primitives9.Button,
           {
             size: "sm",
@@ -3708,11 +3809,11 @@ function ConnectionSection({ c }) {
           },
           t("save")
         ),
-        runtimeRunning ? import_react11.default.createElement(
+        runtimeRunning ? import_react12.default.createElement(
           import_dsh_client_ui_primitives9.Button,
           { size: "sm", variant: "ghost", disabled: Boolean(busy.runtime), onClick: () => c.restartBackend() },
           t("restartService")
-        ) : import_react11.default.createElement(
+        ) : import_react12.default.createElement(
           import_dsh_client_ui_primitives9.Button,
           {
             size: "sm",
@@ -3722,13 +3823,13 @@ function ConnectionSection({ c }) {
           },
           t("startService")
         ),
-        runtimeManaged ? import_react11.default.createElement(
+        runtimeManaged ? import_react12.default.createElement(
           import_dsh_client_ui_primitives9.Button,
           { size: "sm", variant: "ghost", disabled: Boolean(busy.runtime), onClick: () => c.stopBackend() },
           t("stopService")
         ) : null
       ),
-      !runtimeManaged && runtimeRunning ? import_react11.default.createElement("p", { className: "ss-form__hint" }, t("externalServiceHint")) : null
+      !runtimeManaged && runtimeRunning ? import_react12.default.createElement("p", { className: "ss-form__hint" }, t("externalServiceHint")) : null
     )
   );
 }
@@ -3740,66 +3841,66 @@ function ExtensionSection({ c }) {
   const client = clients.find((entry) => entry.state === "connected") ?? clients[0] ?? null;
   const connected = Boolean(extension?.connected);
   const site = client?.active_site ?? null;
-  return import_react11.default.createElement(
+  return import_react12.default.createElement(
     "div",
     { className: "ss-settings__group" },
-    import_react11.default.createElement("h2", { className: "ss-settings__group-title" }, t("extensionSectionTitle")),
-    import_react11.default.createElement("p", { className: "ss-settings__group-hint" }, t("extensionSectionHint")),
-    import_react11.default.createElement(
+    import_react12.default.createElement("h2", { className: "ss-settings__group-title" }, t("extensionSectionTitle")),
+    import_react12.default.createElement("p", { className: "ss-settings__group-hint" }, t("extensionSectionHint")),
+    import_react12.default.createElement(
       "div",
       { className: "ss-summary-grid" },
-      import_react11.default.createElement(
+      import_react12.default.createElement(
         "div",
         { className: "ss-form__row" },
-        import_react11.default.createElement("span", { className: "ss-field-row__label" }, t("extensionSectionTitle")),
-        import_react11.default.createElement(
+        import_react12.default.createElement("span", { className: "ss-field-row__label" }, t("extensionSectionTitle")),
+        import_react12.default.createElement(
           "span",
           { className: "ss-status", "data-tone": connected ? "success" : data ? "attention" : "neutral" },
-          import_react11.default.createElement(import_dsh_client_ui_primitives9.StateDot, { state: connected ? "done" : "warning", size: 8 }),
+          import_react12.default.createElement(import_dsh_client_ui_primitives9.StateDot, { state: connected ? "done" : "warning", size: 8 }),
           data ? connected ? t("extensionConnected") : t("extensionMissing") : t("checkDetailUnknown")
         )
       ),
-      import_react11.default.createElement(FieldRow, {
+      import_react12.default.createElement(FieldRow, {
         label: t("extensionVersionLabel"),
         value: client?.version ?? "\u2014",
         muted: !client
       }),
-      import_react11.default.createElement(FieldRow, {
+      import_react12.default.createElement(FieldRow, {
         label: t("extensionProtocolLabel"),
         value: client ? `${client.protocol_version}${client.protocol_compatible ? "" : ` \xB7 ${t("protocolMismatchShort")}`}` : "\u2014",
         muted: !client
       }),
-      import_react11.default.createElement(FieldRow, {
+      import_react12.default.createElement(FieldRow, {
         label: t("extensionConsentLabel"),
         value: client?.data_consent_granted === true ? t("extensionConsentOk") : client?.data_consent_granted === false ? t("extensionConsentMissing") : "\u2014",
         muted: client?.data_consent_granted !== true
       }),
-      import_react11.default.createElement(FieldRow, {
+      import_react12.default.createElement(FieldRow, {
         label: t("extensionSiteLabel"),
         value: site?.host ? `${site.host}${site.matched_adapter_id ? `\uFF08${site.matched_adapter_id}\uFF09` : ""}` : t("extensionSiteNone"),
         muted: !site?.host
       })
     ),
-    !data ? import_react11.default.createElement(InlineNote, null, t("readinessUnsupported")) : null,
-    client?.protocol_compatible === false ? import_react11.default.createElement(InlineNote, { tone: "error" }, t("guidanceProtocolBody")) : null,
-    import_react11.default.createElement(
+    !data ? import_react12.default.createElement(InlineNote, null, t("readinessUnsupported")) : null,
+    client?.protocol_compatible === false ? import_react12.default.createElement(InlineNote, { tone: "error" }, t("guidanceProtocolBody")) : null,
+    import_react12.default.createElement(
       "details",
       { className: "ss-details" },
-      import_react11.default.createElement("summary", null, t("extensionInstallTitle")),
-      import_react11.default.createElement(
+      import_react12.default.createElement("summary", null, t("extensionInstallTitle")),
+      import_react12.default.createElement(
         "div",
         { className: "ss-details__body" },
-        import_react11.default.createElement("p", { className: "ss-note" }, t("extensionInstallSteps")),
-        import_react11.default.createElement("p", { className: "ss-note" }, t("extensionReloadSteps")),
-        import_react11.default.createElement("p", { className: "ss-note" }, t("extensionConsentSteps")),
-        import_react11.default.createElement("p", { className: "ss-note" }, t("docsConsoleHint"))
+        import_react12.default.createElement("p", { className: "ss-note" }, t("extensionInstallSteps")),
+        import_react12.default.createElement("p", { className: "ss-note" }, t("extensionReloadSteps")),
+        import_react12.default.createElement("p", { className: "ss-note" }, t("extensionConsentSteps")),
+        import_react12.default.createElement("p", { className: "ss-note" }, t("docsConsoleHint"))
       )
     )
   );
 }
 function SettingsSection(props) {
   const { locale } = props;
-  const modelRef = import_react11.default.useRef(null);
+  const modelRef = import_react12.default.useRef(null);
   const c = useConsole(locale);
   const handleFix = (fix) => {
     if (fix.intent === "open_model_settings") {
@@ -3821,24 +3922,24 @@ function SettingsSection(props) {
     props.close?.();
   };
   const unstable = c.settingsStatus !== "ready" || !c.settingsWritable;
-  return import_react11.default.createElement(
+  return import_react12.default.createElement(
     "div",
     { className: "ss-settings", "data-testid": "suhuang-scroll-settings" },
-    import_react11.default.createElement(
+    import_react12.default.createElement(
       "div",
       { className: "ss-settings__head" },
-      import_react11.default.createElement("h1", { className: "ss-settings__title" }, c.t("settingsTitle")),
-      import_react11.default.createElement("p", { className: "ss-settings__description" }, c.t("settingsDescription"))
+      import_react12.default.createElement("h1", { className: "ss-settings__title" }, c.t("settingsTitle")),
+      import_react12.default.createElement("p", { className: "ss-settings__description" }, c.t("settingsDescription"))
     ),
-    unstable ? import_react11.default.createElement(
+    unstable ? import_react12.default.createElement(
       InlineNote,
       null,
       c.settingsStatus !== "ready" ? c.t("settingsUnavailable") : c.t("settingsReadOnly")
     ) : null,
-    import_react11.default.createElement(
+    import_react12.default.createElement(
       Section,
       { title: c.t("settingsEnvTitle"), hint: c.t("settingsEnvHint") },
-      import_react11.default.createElement(ReadinessList, {
+      import_react12.default.createElement(ReadinessList, {
         rows: c.readiness.rows,
         t: c.t,
         describe: (row) => describeRow(row, { host: c.host, catalog: c.catalog, settings: c.settings }, c.t),
@@ -3846,63 +3947,63 @@ function SettingsSection(props) {
         onFix: handleFix,
         disabled: Boolean(c.busy.runtime)
       }),
-      !c.readiness.supported ? import_react11.default.createElement(InlineNote, null, c.t("readinessUnsupported")) : null
+      !c.readiness.supported ? import_react12.default.createElement(InlineNote, null, c.t("readinessUnsupported")) : null
     ),
-    import_react11.default.createElement(ModelForm, { c, sectionRef: modelRef }),
-    import_react11.default.createElement(ConnectionSection, { c }),
-    import_react11.default.createElement(ExtensionSection, { c }),
-    import_react11.default.createElement(
+    import_react12.default.createElement(ModelForm, { c, sectionRef: modelRef }),
+    import_react12.default.createElement(ConnectionSection, { c }),
+    import_react12.default.createElement(ExtensionSection, { c }),
+    import_react12.default.createElement(
       "div",
       { className: "ss-settings__group" },
-      import_react11.default.createElement("h2", { className: "ss-settings__group-title" }, c.t("settingsGradingTitle")),
-      import_react11.default.createElement("p", { className: "ss-settings__group-hint" }, c.t("settingsGradingHint")),
-      import_react11.default.createElement(
+      import_react12.default.createElement("h2", { className: "ss-settings__group-title" }, c.t("settingsGradingTitle")),
+      import_react12.default.createElement("p", { className: "ss-settings__group-hint" }, c.t("settingsGradingHint")),
+      import_react12.default.createElement(
         "div",
         { className: "ss-summary-grid" },
-        import_react11.default.createElement(FieldRow, {
+        import_react12.default.createElement(FieldRow, {
           label: c.t("defaultSpec"),
           value: c.hasSpec ? safeBasename(c.settings.defaultSpec || c.catalog.specs?.[0]?.value || "") : c.t("settingsNoSpec"),
           muted: !c.hasSpec
         }),
-        import_react11.default.createElement(FieldRow, {
+        import_react12.default.createElement(FieldRow, {
           label: c.t("defaultAdapter"),
           value: c.adapterLabel || c.t("followRuntimeUnknown"),
           muted: !c.adapterLabel
         })
       ),
-      import_react11.default.createElement(
+      import_react12.default.createElement(
         import_dsh_client_ui_primitives9.Button,
         { size: "sm", variant: "primary", onClick: openConsole },
         c.t("settingsOpenConsole")
       )
     ),
-    import_react11.default.createElement(NewSiteHelp, { t: c.t, show: c.show }),
-    import_react11.default.createElement(
+    import_react12.default.createElement(NewSiteHelp, { t: c.t, show: c.show }),
+    import_react12.default.createElement(
       "div",
       { className: "ss-settings__group" },
-      import_react11.default.createElement("h2", { className: "ss-settings__group-title" }, c.t("docsTitle")),
-      import_react11.default.createElement("p", { className: "ss-settings__group-hint" }, c.t("settingsDocsHint")),
-      import_react11.default.createElement(DocsLinks, { t: c.t, show: c.show })
+      import_react12.default.createElement("h2", { className: "ss-settings__group-title" }, c.t("docsTitle")),
+      import_react12.default.createElement("p", { className: "ss-settings__group-hint" }, c.t("settingsDocsHint")),
+      import_react12.default.createElement(DocsLinks, { t: c.t, show: c.show })
     ),
-    import_react11.default.createElement(ConsoleSurfaces, { c, withConfigSheet: false }),
-    import_react11.default.createElement(
+    import_react12.default.createElement(ConsoleSurfaces, { c, withConfigSheet: false }),
+    import_react12.default.createElement(
       "details",
       { className: "ss-details" },
-      import_react11.default.createElement("summary", null, c.t("connectionDetails")),
-      import_react11.default.createElement(
+      import_react12.default.createElement("summary", null, c.t("connectionDetails")),
+      import_react12.default.createElement(
         "div",
         { className: "ss-details__body" },
-        import_react11.default.createElement(
+        import_react12.default.createElement(
           "dl",
           { className: "ss-detail-grid" },
-          import_react11.default.createElement("dt", null, c.t("apiAddress")),
-          import_react11.default.createElement("dd", null, c.settings.apiBaseUrl),
-          import_react11.default.createElement("dt", null, c.t("pidLabel")),
-          import_react11.default.createElement("dd", null, String(c.host?.process?.pid ?? "\u2014")),
-          import_react11.default.createElement("dt", null, c.t("pluginVersionLabel")),
-          import_react11.default.createElement("dd", null, String(c.host?.host?.pluginVersion ?? "\u2014")),
-          import_react11.default.createElement("dt", null, c.t("protocolExpectedLabel")),
-          import_react11.default.createElement("dd", null, String(c.host?.host?.expectedProtocol ?? "\u2014"))
+          import_react12.default.createElement("dt", null, c.t("apiAddress")),
+          import_react12.default.createElement("dd", null, c.settings.apiBaseUrl),
+          import_react12.default.createElement("dt", null, c.t("pidLabel")),
+          import_react12.default.createElement("dd", null, String(c.host?.process?.pid ?? "\u2014")),
+          import_react12.default.createElement("dt", null, c.t("pluginVersionLabel")),
+          import_react12.default.createElement("dd", null, String(c.host?.host?.pluginVersion ?? "\u2014")),
+          import_react12.default.createElement("dt", null, c.t("protocolExpectedLabel")),
+          import_react12.default.createElement("dd", null, String(c.host?.host?.expectedProtocol ?? "\u2014"))
         )
       )
     )
@@ -3914,16 +4015,16 @@ var PANEL_ID = "suhuang-scroll";
 var RIGHT_TAB_ID = "dsh-suhuang-scroll/runtime";
 var RIGHT_TAB_KIND = "suhuang-scroll";
 function SuhuangTabIcon({ size = 16 }) {
-  return import_react12.default.createElement(import_dsh_client_ui_primitives10.IconListPenOutlineRegular, { size });
+  return import_react13.default.createElement(import_dsh_client_ui_primitives10.IconListPenOutlineRegular, { size });
 }
 function MainPage({ locale, onOpenRightTab }) {
-  return import_react12.default.createElement(ConsolePage, { locale, variant: "main", onOpenRightTab });
+  return import_react13.default.createElement(ConsolePage, { locale, variant: "main", onOpenRightTab });
 }
 function CompactPage({ locale }) {
-  return import_react12.default.createElement(ConsolePage, { locale, variant: "compact" });
+  return import_react13.default.createElement(ConsolePage, { locale, variant: "compact" });
 }
 function SettingsPage({ locale, onOpenConsole, close }) {
-  return import_react12.default.createElement(SettingsSection, { locale, onOpenConsole, close });
+  return import_react13.default.createElement(SettingsSection, { locale, onOpenConsole, close });
 }
 function registerSurfaces(ctx, { locale, t }) {
   const layoutService = () => {
@@ -4030,11 +4131,11 @@ function registerSurfaces(ctx, { locale, t }) {
             locale: NS,
             inject: () => ({ locale })
           },
-          ({ locale: tabLocale }) => import_react12.default.createElement(
-            import_react12.default.Fragment,
+          ({ locale: tabLocale }) => import_react13.default.createElement(
+            import_react13.default.Fragment,
             null,
-            import_react12.default.createElement(SuhuangTabIcon, { size: 16 }),
-            import_react12.default.createElement(
+            import_react13.default.createElement(SuhuangTabIcon, { size: 16 }),
+            import_react13.default.createElement(
               "span",
               { style: { marginInlineStart: 6 } },
               tabLocale.bind(NS)("tab")
@@ -4501,6 +4602,39 @@ var styles_default = `/* Suhuang Scroll console \u2014 native DSH dashboard.
   max-width: 260px;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.ss-diagnostics {
+  display: grid;
+  gap: 7px;
+  padding-top: 10px;
+  border-top: 1px solid var(--dsw-alias-border-l2);
+  color: var(--dsw-alias-label-secondary);
+  font-size: 13px;
+  line-height: 19px;
+}
+
+.ss-diagnostics__message {
+  margin: 0;
+  color: var(--dsw-alias-label-primary);
+  overflow-wrap: anywhere;
+}
+
+.ss-diagnostics__list {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 3px 10px;
+  margin: 0;
+}
+
+.ss-diagnostics__list dt {
+  color: var(--dsw-alias-label-secondary);
+}
+
+.ss-diagnostics__list dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: var(--dsw-alias-label-primary);
 }
 
 /* ---------- Awaiting / notice surfaces ---------- */

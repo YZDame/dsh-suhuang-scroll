@@ -3,6 +3,7 @@ import React from "react";
 import { Button, StateDot } from "@deepseek-ai/dsh-client-ui-primitives";
 
 import { InlineNote } from "./common.jsx";
+import { AutomationDiagnostics } from "./AutomationDiagnostics.jsx";
 import { Metric } from "./panels.jsx";
 import { formatDuration, pendingDecision, runStageLabel } from "../model.js";
 
@@ -178,10 +179,11 @@ export function RunPanel({ c }) {
               }),
             ),
             React.createElement(RunConfigLine, { c }),
+            React.createElement(AutomationDiagnostics, { t, run }),
             phase === "pausing"
               ? React.createElement(InlineNote, null, t("pausingDescription"))
               : null,
-            phase === "error" && run?.error_message
+            phase === "error" && run?.error_message && !run?.last_error
               ? React.createElement(InlineNote, { tone: "error" }, run.error_message)
               : null,
             run?.pause_reason && phase !== "running" && phase !== "starting"

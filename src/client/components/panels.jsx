@@ -3,6 +3,7 @@ import React from "react";
 import { Button } from "@deepseek-ai/dsh-client-ui-primitives";
 
 import { copyText, FieldRow, InlineNote, Section } from "./common.jsx";
+import { AutomationDiagnostics } from "./AutomationDiagnostics.jsx";
 import { NewSiteHelp } from "./dialogs.jsx";
 import { ReadinessList } from "./ReadinessList.jsx";
 import { formatDuration, safeBasename } from "../model.js";
@@ -248,6 +249,7 @@ export function SummaryPanel({ c, onConfigure }) {
             }`
           : t("summaryNoRecord"),
       ),
+      React.createElement(AutomationDiagnostics, { t, run }),
     ),
     React.createElement(
       "div",

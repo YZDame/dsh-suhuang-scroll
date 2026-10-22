@@ -90,7 +90,7 @@ test("supported readiness folds nine checks into five console rows", () => {
     readinessCheck("site_adapter"),
   ];
   const host = {
-    health: { version: "0.6.4", protocol_version: 1 },
+    health: { version: "0.7.0", protocol_version: 1 },
     readiness: { supported: true, data: { ready: true, checks } },
   };
   const readiness = deriveReadiness(host);

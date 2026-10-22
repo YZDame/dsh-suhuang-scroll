@@ -212,7 +212,7 @@ test("mergeReadiness folds host facts into the readiness answer", () => {
       cors: { origin: "http://127.0.0.1:54431", allowed: true },
       apiBaseUrl: "http://127.0.0.1:8000/api",
       port: 8000,
-      pluginVersion: "0.5.0",
+      pluginVersion: "0.7.0",
       expectedProtocol: 1,
       dshVersion: "0.2.0-rc.2",
     },
@@ -223,7 +223,7 @@ test("mergeReadiness folds host facts into the readiness answer", () => {
   assert.equal(merged.data.host.launch.kind, "python");
   assert.equal(merged.data.host.launch.python, "/repo/core/python/.venv/bin/python");
   assert.deepEqual(merged.data.host.cors, { origin: "http://127.0.0.1:54431", allowed: true });
-  assert.equal(merged.data.host.host.pluginVersion, "0.5.0");
+  assert.equal(merged.data.host.host.pluginVersion, "0.7.0");
   assert.equal(merged.data.host.host.expectedProtocol, 1);
 
   const health = merged.data.checks.find((check) => check.id === "runtime_health");
